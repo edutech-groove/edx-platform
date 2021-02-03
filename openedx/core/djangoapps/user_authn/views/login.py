@@ -33,7 +33,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from openedx.core.djangoapps.user_authn.views.login_form import get_login_session_form
 from openedx.core.djangoapps.user_authn.cookies import get_response_with_refreshed_jwt_cookies, set_logged_in_cookies
 from openedx.core.djangoapps.user_authn.exceptions import AuthFailedError
-from openedx.core.djangoapps.user_authn.utils import should_redirect_to_authn_microfrontend
+from openedx.core.djangoapps.user_authn.toggles import should_redirect_to_authn_microfrontend
 from openedx.core.djangoapps.util.user_messages import PageLevelMessages
 from openedx.core.djangoapps.user_authn.views.password_reset import send_password_reset_email_for_user
 from openedx.core.djangoapps.user_authn.toggles import is_require_third_party_auth_enabled
