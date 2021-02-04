@@ -112,8 +112,17 @@ FEATURES = {
     ## Doing so will cause all courses to be released on production
     'DISABLE_START_DATES': False,
 
-    # for consistency in user-experience, keep the value of the following 3 settings
-    # in sync with the corresponding ones in cms/envs/common.py
+    # .. toggle_name: FEATURES['ENABLE_DISCUSSION_SERVICE']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: True
+    # .. toggle_description: When True, it will enable the Discussion tab in courseware for all courses. Setting this
+    #   to False will not contain inline discussion components and discussion tab in any courses.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2012-08-14
+    # .. toggle_warnings: If the discussion panel is present in the course and the value for this flag is False then,
+    #   attempting to expand those components will cause errors. So, this should only be set to False with an LMS that
+    #   is running courses that do not contain discussion components.
+    #   For consistency in user-experience, keep the value in sync with the setting of the same name in the CMS.
     'ENABLE_DISCUSSION_SERVICE': True,
 
     # .. toggle_name: FEATURES['ENABLE_TEXTBOOK']
@@ -123,7 +132,8 @@ FEATURES = {
     # .. toggle_use_cases: open_edx
     # .. toggle_creation_date: 2014-03-27
     # .. toggle_target_removal_date: None
-    # .. toggle_warnings: None
+    # .. toggle_warnings: For consistency in user-experience, keep the value in sync with the setting of the same name
+    #   in the CMS.
     # .. toggle_tickets: https://github.com/edx/edx-platform/pull/3064
     'ENABLE_TEXTBOOK': True,
 
@@ -227,6 +237,15 @@ FEATURES = {
     'ENABLE_CORS_HEADERS': False,
 
     # Can be turned off if course lists need to be hidden. Effects views and templates.
+    # .. toggle_name: FEATURES['COURSES_ARE_BROWSABLE']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: True
+    # .. toggle_description: When this is set to True, all the courses will be listed on the /courses page and Explore
+    #   Courses link will be visible. Set to False if courses list and Explore Courses link need to be hidden.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2013-09-28
+    # .. toggle_warnings: This Effects views and templates.
+    # .. toggle_tickets: https://github.com/edx/edx-platform/pull/1073
     'COURSES_ARE_BROWSABLE': True,
 
     # Set to hide the courses list on the Learner Dashboard if they are not enrolled in
@@ -390,9 +409,15 @@ FEATURES = {
     # Prevent concurrent logins per user
     'PREVENT_CONCURRENT_LOGINS': True,
 
-    # When a logged in user goes to the homepage ('/') should the user be
-    # redirected to the dashboard - this is default Open edX behavior. Set to
-    # False to not redirect the user
+    # .. toggle_name: FEATURES['ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: True
+    # .. toggle_description: When a logged in user goes to the homepage ('/') the user will be redirected to the
+    #   dashboard page when this flag is set to True - this is default Open edX behavior. Set to False to not redirect
+    #   the user.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2014-09-16
+    # .. toggle_tickets: https://github.com/edx/edx-platform/pull/5220
     'ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER': True,
 
     # .. toggle_name: FEATURES['ENABLE_COURSE_SORTING_BY_START_DATE']
@@ -620,7 +645,14 @@ FEATURES = {
     # .. toggle_tickets: https://openedx.atlassian.net/browse/OSPR-1735
     'ALLOW_EMAIL_ADDRESS_CHANGE': True,
 
-    # Whether the bulk enrollment view is enabled.
+    # .. toggle_name: FEATURES['ENABLE_BULK_ENROLLMENT_VIEW']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: False
+    # .. toggle_description: When set to True the bulk enrollment view is enabled and one can use it to enroll multiple
+    #   users in a course using bulk enrollment API endpoint (/api/bulk_enroll/v1/bulk_enroll).
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2017-07-15
+    # .. toggle_tickets: https://github.com/edx/edx-platform/pull/15006
     'ENABLE_BULK_ENROLLMENT_VIEW': False,
 
     # Whether course goals is enabled.
@@ -649,7 +681,14 @@ FEATURES = {
     # Sets the default browser support. For more information go to http://browser-update.org/customize.html
     'UNSUPPORTED_BROWSER_ALERT_VERSIONS': "{i:10,f:-3,o:-3,s:-3,c:-3}",
 
-    # Whether to display the account deletion section the account settings page
+    # .. toggle_name: FEATURES['ENABLE_ACCOUNT_DELETION']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: True
+    # .. toggle_description: Whether to display the account deletion section on Account Settings page. Set to False to
+    #   hide this section.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2018-06-01
+    # .. toggle_tickets: https://github.com/edx/edx-platform/pull/18298
     'ENABLE_ACCOUNT_DELETION': True,
 
     # Enable feature to remove enrollments and users. Used to reset state of master's integration environments
@@ -1098,6 +1137,11 @@ LOG_DIR = '/edx/var/log/edx'
 
 DATA_DIR = '/edx/var/edxapp/data'
 
+# .. setting_name: MAINTENANCE_BANNER_TEXT
+# .. setting_default: 'Sample banner message'
+# .. setting_description: Specifies the text that is rendered on the maintenance banner.
+# .. setting_warning: Depends on the `open_edx_util.display_maintenance_warning` waffle switch.
+#   The banner is only rendered when the switch is activated.
 MAINTENANCE_BANNER_TEXT = 'Sample banner message'
 
 GIT_REPO_DIR = '/edx/var/edxapp/course_repos'
@@ -1116,6 +1160,13 @@ CERTIFICATE_DATE_FORMAT = "%B %-d, %Y"
 
 ENABLE_MULTICOURSE = False  # set to False to disable multicourse display (see lib.util.views.edXhome)
 
+# .. toggle_name: WIKI_ENABLED
+# .. toggle_implementation: DjangoSetting
+# .. toggle_default: True
+# .. toggle_description: This setting allows us to have a collaborative tool to contribute or
+#   modify content of course related materials.
+# .. toggle_use_cases: open_edx
+# .. toggle_creation_date: 2012-07-13
 WIKI_ENABLED = True
 
 ###
@@ -1643,17 +1694,48 @@ SIMPLE_WIKI_REQUIRE_LOGIN_VIEW = False
 ################################# WIKI ###################################
 from lms.djangoapps.course_wiki import settings as course_wiki_settings  # pylint: disable=wrong-import-position
 
+# .. toggle_name: WIKI_ACCOUNT_HANDLING
+# .. toggle_implementation: DjangoSetting
+# .. toggle_default: False
+# .. toggle_description: We recommend you leave this as 'False' for an Open edX installation
+#   to get the proper behavior for register, login and logout. For the original docs see:
+#   https://github.com/edx/django-wiki/blob/edx_release/wiki/conf/settings.py
+# .. toggle_use_cases: open_edx
+# .. toggle_creation_date: 2012-08-13
 WIKI_ACCOUNT_HANDLING = False
 WIKI_EDITOR = 'lms.djangoapps.course_wiki.editors.CodeMirror'
 WIKI_SHOW_MAX_CHILDREN = 0  # We don't use the little menu that shows children of an article in the breadcrumb
-WIKI_ANONYMOUS = False  # Don't allow anonymous access until the styling is figured out
+# .. toggle_name: WIKI_ANONYMOUS
+# .. toggle_implementation: DjangoSetting
+# .. toggle_default: False
+# .. toggle_description: Enabling this allows access to anonymous users.
+#   For the original docs, see:
+#   https://github.com/edx/django-wiki/blob/edx_release/wiki/conf/settings.py
+# .. toggle_warnings: Setting allow anonymous access to `True` may have styling issues.
+# .. toggle_use_cases: open_edx
+# .. toggle_creation_date: 2012-08-21
+WIKI_ANONYMOUS = False
 
 WIKI_CAN_DELETE = course_wiki_settings.CAN_DELETE
 WIKI_CAN_MODERATE = course_wiki_settings.CAN_MODERATE
 WIKI_CAN_CHANGE_PERMISSIONS = course_wiki_settings.CAN_CHANGE_PERMISSIONS
 WIKI_CAN_ASSIGN = course_wiki_settings.CAN_ASSIGN
-
+# .. toggle_name: WIKI_USE_BOOTSTRAP_SELECT_WIDGET
+# .. toggle_implementation: DjangoSetting
+# .. toggle_default: False
+# .. toggle_description: Enabling this will use the bootstrap select widget.
+#   For the original docs, see:
+#   https://github.com/edx/django-wiki/blob/edx_release/wiki/conf/settings.py
+# .. toggle_use_cases: open_edx
+# .. toggle_creation_date: 2012-08-22
 WIKI_USE_BOOTSTRAP_SELECT_WIDGET = False
+# .. toggle_name: WIKI_LINK_LIVE_LOOKUPS
+# .. toggle_implementation: DjangoSetting
+# .. toggle_default: False
+# .. toggle_description: This setting is defined in the original docs:
+#   https://github.com/edx/django-wiki/blob/edx_release/wiki/conf/settings.py
+# .. toggle_use_cases: open_edx
+# .. toggle_creation_date: 2012-08-23
 WIKI_LINK_LIVE_LOOKUPS = False
 WIKI_LINK_DEFAULT_LEVEL = 2
 

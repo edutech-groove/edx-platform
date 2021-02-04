@@ -173,9 +173,9 @@ STUDIO_SHORT_NAME = _("Studio")
 FEATURES = {
     'GITHUB_PUSH': False,
 
-    # for consistency in user-experience, keep the value of the following 3 settings
-    # in sync with the ones in lms/envs/common.py
+    # See annotations in lms/envs/common.py for details.
     'ENABLE_DISCUSSION_SERVICE': True,
+    # See annotations in lms/envs/common.py for details.
     'ENABLE_TEXTBOOK': True,
 
     # When True, all courses will be active, regardless of start date
@@ -403,7 +403,7 @@ FEATURES = {
     #        eg: '2020-09-01'
     # .. toggle_use_cases: temporary
     # .. toggle_creation_date: 2020-06-12
-    # .. toggle_target_removal_date: 2020-12-01
+    # .. toggle_target_removal_date: 2021-04-01
     # .. toggle_warnings: This can be removed once support is removed for deprecated
     #   course keys.
     # .. toggle_tickets: https://openedx.atlassian.net/browse/DEPR-58
