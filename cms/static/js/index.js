@@ -2,6 +2,7 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
     'js/views/utils/create_library_utils', 'common/js/components/utils/view_utils'],
     function(domReady, $, _, CancelOnEscape, CreateCourseUtilsFactory, CreateLibraryUtilsFactory, ViewUtils) {
         'use strict';
+        var creatingTypes = [];
         var CreateCourseUtils = new CreateCourseUtilsFactory({
             name: '.new-course-name',
             org: '.new-course-org',
@@ -95,6 +96,15 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
                 $('#' + addType + '_creation_error').html('');
                 $('.create-' + addType + ' .wrap-error').removeClass('is-shown');
                 $('.new-' + addType + '-save').off('click');
+
+                var i = creatingTypes.findIndex(function(item) { return item === addType });
+                if (i > -1) {
+                    creatingTypes.splice(i, 1);
+                }
+
+                if (creatingTypes.length < 1) {
+                    $('body').removeClass('is-creating');
+                }
             };
         };
 
@@ -115,6 +125,14 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
             CreateCourseUtils.setupOrgAutocomplete();
             CreateCourseUtils.configureHandlers();
             rtlTextDirection();
+
+            if (!creatingTypes.includes('course')) {
+                creatingTypes.push('course');
+            }
+
+            if (creatingTypes.length > 0) {
+                $('body').addClass('is-creating');
+            }
         };
 
         var saveNewLibrary = function(e) {
@@ -157,6 +175,14 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
             CancelOnEscape($cancelButton);
 
             CreateLibraryUtils.configureHandlers();
+
+            if (!creatingTypes.includes('library')) {
+                creatingTypes.push('library');
+            }
+
+            if (creatingTypes.length > 0) {
+                $('body').addClass('is-creating');
+            }
         };
 
         var showTab = function(tab) {
@@ -181,9 +207,9 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
 
             $('.action-reload').bind('click', ViewUtils.reload);
 
-            $('#course-index-tabs .courses-tab').bind('click', showTab('courses'));
-            $('#course-index-tabs .archived-courses-tab').bind('click', showTab('archived-courses'));
-            $('#course-index-tabs .libraries-tab').bind('click', showTab('libraries'));
+            $('.course-index-tabs .courses-tab').bind('click', showTab('courses'));
+            $('.course-index-tabs .archived-courses-tab').bind('click', showTab('archived-courses'));
+            $('.course-index-tabs .libraries-tab').bind('click', showTab('libraries'));
         };
 
         domReady(onReady);
