@@ -469,49 +469,59 @@
         };
 
         ReportDownloads.prototype.create_report_downloads_table = function(reportDownloadsData) {
-            var $tablePlaceholder, columns, grid, options;
+            // var $tablePlaceholder, columns, grid, options;
             this.$report_downloads_table.empty();
-            options = {
-                enableCellNavigation: true,
-                enableColumnReorder: false,
-                rowHeight: 30,
-                forceFitColumns: true
-            };
-            columns = [
-                {
-                    id: 'link',
-                    field: 'link',
-                    name: gettext('File Name'),
-                    toolTip: gettext('Links are generated on demand and expire within 5 minutes due to the sensitive nature of student information.'), //  eslint-disable-line max-len
-                    sortable: false,
-                    minWidth: 150,
-                    cssClass: 'file-download-link',
-                    formatter: function(row, cell, value, columnDef, dataContext) {
-                        return edx.HtmlUtils.joinHtml(edx.HtmlUtils.HTML(
-                            '<a rel="noopener" target="_blank" href="'), dataContext.url,
-                            edx.HtmlUtils.HTML('">'), dataContext.name,
-                            edx.HtmlUtils.HTML('</a>'));
-                    }
-                }
-            ];
-            $tablePlaceholder = $('<div/>', {
-                class: 'slickgrid'
+            // options = {
+            //     enableCellNavigation: true,
+            //     enableColumnReorder: false,
+            //     rowHeight: 30,
+            //     forceFitColumns: true
+            // };
+            // columns = [
+            //     {
+            //         id: 'link',
+            //         field: 'link',
+            //         name: gettext('File Name'),
+            //         toolTip: gettext('Links are generated on demand and expire within 5 minutes due to the sensitive nature of student information.'), //  eslint-disable-line max-len
+            //         sortable: false,
+            //         minWidth: 150,
+            //         cssClass: 'file-download-link',
+            //         formatter: function(row, cell, value, columnDef, dataContext) {
+            //             return edx.HtmlUtils.joinHtml(edx.HtmlUtils.HTML(
+            //                 '<a rel="noopener" target="_blank" href="'), dataContext.url,
+            //                 edx.HtmlUtils.HTML('">'), dataContext.name,
+            //                 edx.HtmlUtils.HTML('</a>'));
+            //         }
+            //     }
+            // ];
+            // $tablePlaceholder = $('<div/>', {
+            //     class: 'slickgrid'
+            // });
+
+            var table = `<div class="tb-header paragraph1">File Name</div>
+            <div class="tb-body">`;
+
+            reportDownloadsData.forEach(function(item) {
+                table += `<div class="dl-item"><a rel="noopener" target="_blank" href="${item.url}"><i class="fa fa-download"></i><span>${item.name}</a></div>`;
             });
-            this.$report_downloads_table.append($tablePlaceholder);
-            grid = new Slick.Grid($tablePlaceholder, reportDownloadsData, columns, options);
-            grid.onClick.subscribe(function(event) {
-                var reportUrl;
-                reportUrl = event.target.href;
-                if (reportUrl) {
-                    return Logger.log('edx.instructor.report.downloaded', {
-                        report_url: reportUrl
-                    });
-                }
-                return Logger.log('edx.instructor.report.downloaded', {
-                    report_url: reportUrl
-                });
-            });
-            return grid.autosizeColumns();
+
+            table += `</div>`;
+
+            this.$report_downloads_table.append(table);
+            // grid = new Slick.Grid($tablePlaceholder, reportDownloadsData, columns, options);
+            // grid.onClick.subscribe(function(event) {
+            //     var reportUrl;
+            //     reportUrl = event.target.href;
+            //     if (reportUrl) {
+            //         return Logger.log('edx.instructor.report.downloaded', {
+            //             report_url: reportUrl
+            //         });
+            //     }
+            //     return Logger.log('edx.instructor.report.downloaded', {
+            //         report_url: reportUrl
+            //     });
+            // });
+            // return grid.autosizeColumns();
         };
 
         return ReportDownloads;
