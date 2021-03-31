@@ -6,7 +6,7 @@
                 options: $.extend({}, SystemFeedbackView.prototype.options, {
                     type: 'alert'
                 }),
-                slide_speed: 900,
+                slide_speed: 250,
                 show: function() {
                     SystemFeedbackView.prototype.show.apply(this, arguments);
                     this.$el.hide();
@@ -14,11 +14,9 @@
                     return this;
                 },
                 hide: function() {
-                    this.$el.slideUp({
-                        duration: this.slide_speed
-                    });
-                    setTimeout(_.bind(SystemFeedbackView.prototype.hide, this, arguments),
-                           this.slideSpeed);
+                    this.$el.slideUp(this.slide_speed);
+                    // setTimeout(_.bind(SystemFeedbackView.prototype.hide, this, arguments),
+                    //        this.slideSpeed);
                 }
             });
 
