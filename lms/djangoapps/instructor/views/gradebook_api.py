@@ -3,7 +3,7 @@ Grade book view for instructor and pagination work (for grade book)
 which is currently use by ccx and instructor apps.
 """
 import math
-
+import uuid
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -25,9 +25,11 @@ from django_comment_common.models import FORUM_ROLE_ADMINISTRATOR, CourseDiscuss
 from django.http import Http404, HttpResponseServerError
 from course_modes.models import CourseMode
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.verified_track_content.models import VerifiedTrackCohortedCourse
 from django.utils.translation import ugettext as _
 from openedx.core.djangolib.markup import HTML, Text
 from bulk_email.models import BulkEmailFlag
+from class_dashboard.dashboard_data import get_array_section_has_problem, get_section_display_name
 from lms.djangoapps.certificates import api as certs_api
 from lms.djangoapps.certificates.models import (
     CertificateGenerationConfiguration,
@@ -37,9 +39,15 @@ from lms.djangoapps.certificates.models import (
     CertificateWhitelist,
     GeneratedCertificate
 )
-from openedx.core.djangoapps.course_groups.cohorts import is_course_cohorted
+from openedx.core.djangoapps.course_groups.cohorts import DEFAULT_COHORT_NAME, get_course_cohorts, is_course_cohorted
 from lms.djangoapps.grades.config.waffle import waffle_flags, WRITABLE_GRADEBOOK
 from .tools import get_units_with_due_date, title_or_url
+from mock import patch
+from xmodule.html_module import HtmlDescriptor
+from xblock.fields import ScopeIds
+from openedx.core.lib.url_utils import quote_slashes
+from xblock.field_data import DictFieldData
+from openedx.core.lib.xblock_utils import wrap_xblock
 
 # Grade book: max students per page
 MAX_STUDENTS_PER_PAGE_GRADE_BOOK = 20
@@ -575,3 +583,141 @@ def show_analytics_dashboard_message(course_key):
         return settings.ANALYTICS_DASHBOARD_URL and ccx_analytics_enabled
 
     return settings.ANALYTICS_DASHBOARD_URL
+
+
+def null_applicable_aside_types(block):  # pylint: disable=unused-argument
+    """
+    get_aside method for monkey-patching into applicable_aside_types
+    while rendering an HtmlDescriptor for email text editing. This returns
+    an empty list.
+    """
+    return []
+
+
+def _section_send_email(course, access):
+    """ Provide data for the corresponding bulk email section """
+    course_key = course.id
+
+    # Monkey-patch applicable_aside_types to return no asides for the duration of this render
+    with patch.object(course.runtime, 'applicable_aside_types', null_applicable_aside_types):
+        # This HtmlDescriptor is only being used to generate a nice text editor.
+        html_module = HtmlDescriptor(
+            course.system,
+            DictFieldData({'data': ''}),
+            ScopeIds(None, None, None, course_key.make_usage_key('html', 'fake'))
+        )
+        fragment = course.system.render(html_module, 'studio_view')
+    fragment = wrap_xblock(
+        'LmsRuntime', html_module, 'studio_view', fragment, None,
+        extra_data={"course-id": unicode(course_key)},
+        usage_id_serializer=lambda usage_id: quote_slashes(unicode(usage_id)),
+        # Generate a new request_token here at random, because this module isn't connected to any other
+        # xblock rendering.
+        request_token=uuid.uuid1().get_hex()
+    )
+    cohorts = []
+    if is_course_cohorted(course_key):
+        cohorts = get_course_cohorts(course)
+    course_modes = []
+    if not VerifiedTrackCohortedCourse.is_verified_track_cohort_enabled(course_key):
+        course_modes = CourseMode.modes_for_course(course_key, include_expired=True, only_selectable=False)
+    email_editor = fragment.content
+    section_data = {
+        'section_key': 'send_email',
+        'section_display_name': _('Email'),
+        'access': access,
+        'send_email': reverse('send_email', kwargs={'course_id': unicode(course_key)}),
+        'editor': email_editor,
+        'cohorts': cohorts,
+        'course_modes': course_modes,
+        'default_cohort_name': DEFAULT_COHORT_NAME,
+        'list_instructor_tasks_url': reverse(
+            'list_instructor_tasks', kwargs={'course_id': unicode(course_key)}
+        ),
+        'email_background_tasks_url': reverse(
+            'list_background_email_tasks', kwargs={'course_id': unicode(course_key)}
+        ),
+        'email_content_history_url': reverse(
+            'list_email_content', kwargs={'course_id': unicode(course_key)}
+        ),
+    }
+    return section_data
+
+
+def _get_dashboard_link(course_key):
+    """ Construct a URL to the external analytics dashboard """
+    analytics_dashboard_url = '{0}/courses/{1}'.format(settings.ANALYTICS_DASHBOARD_URL, unicode(course_key))
+    link = HTML(u"<a href=\"{0}\" rel=\"noopener\" target=\"_blank\">{1}</a>").format(
+        analytics_dashboard_url, settings.ANALYTICS_DASHBOARD_NAME
+    )
+    return link
+
+
+def _section_analytics(course, access):
+    """ Provide data for the corresponding dashboard section """
+    section_data = {
+        'section_key': 'instructor_analytics',
+        'section_display_name': _('Analytics'),
+        'access': access,
+        'course_id': unicode(course.id),
+    }
+    return section_data
+
+
+def _section_metrics(course, access):
+    """Provide data for the corresponding dashboard section """
+    course_key = course.id
+    section_data = {
+        'section_key': 'metrics',
+        'section_display_name': _('Metrics'),
+        'access': access,
+        'course_id': unicode(course_key),
+        'sub_section_display_name': get_section_display_name(course_key),
+        'section_has_problem': get_array_section_has_problem(course_key),
+        'get_students_opened_subsection_url': reverse('get_students_opened_subsection'),
+        'get_students_problem_grades_url': reverse('get_students_problem_grades'),
+        'post_metrics_data_csv_url': reverse('post_metrics_data_csv'),
+    }
+    return section_data
+
+
+def _section_open_response_assessment(request, course, openassessment_blocks, access):
+    """Provide data for the corresponding dashboard section """
+    course_key = course.id
+
+    ora_items = []
+    parents = {}
+
+    for block in openassessment_blocks:
+        block_parent_id = unicode(block.parent)
+        result_item_id = unicode(block.location)
+        if block_parent_id not in parents:
+            parents[block_parent_id] = modulestore().get_item(block.parent)
+
+        ora_items.append({
+            'id': result_item_id,
+            'name': block.display_name,
+            'parent_id': block_parent_id,
+            'parent_name': parents[block_parent_id].display_name,
+            'staff_assessment': 'staff-assessment' in block.assessment_steps,
+            'url_base': reverse('xblock_view', args=[course.id, block.location, 'student_view']),
+            'url_grade_available_responses': reverse('xblock_view', args=[course.id, block.location,
+                                                                          'grade_available_responses_view']),
+        })
+
+    openassessment_block = openassessment_blocks[0]
+    block, __ = get_module_by_usage_id(
+        request, unicode(course_key), unicode(openassessment_block.location),
+        disable_staff_debug_info=True, course=course
+    )
+    section_data = {
+        'fragment': block.render('ora_blocks_listing_view', context={
+            'ora_items': ora_items,
+            'ora_item_view_enabled': settings.FEATURES.get('ENABLE_XBLOCK_VIEW_ENDPOINT', False)
+        }),
+        'section_key': 'open_response_assessment',
+        'section_display_name': _('Open Responses'),
+        'access': access,
+        'course_id': unicode(course_key),
+    }
+    return section_data
