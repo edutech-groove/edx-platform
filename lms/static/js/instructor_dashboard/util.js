@@ -498,14 +498,14 @@
             //     class: 'slickgrid'
             // });
 
-            var table = `<div class="tb-header paragraph1">File Name</div>
-            <div class="tb-body">`;
+            var table = '<div class="tb-header paragraph1">File Name</div>' +
+            '<div class="tb-body">';
 
             reportDownloadsData.forEach(function(item) {
-                table += `<div class="dl-item"><a rel="noopener" target="_blank" href="${item.url}"><i class="fa fa-download"></i><span>${item.name}</a></div>`;
+                table += '<div class="dl-item"><a rel="noopener" target="_blank" href="${item.url}"><i class="fa fa-download"></i><span>${item.name}</a></div>';
             });
 
-            table += `</div>`;
+            table += '</div>';
 
             this.$report_downloads_table.append(table);
             // grid = new Slick.Grid($tablePlaceholder, reportDownloadsData, columns, options);
