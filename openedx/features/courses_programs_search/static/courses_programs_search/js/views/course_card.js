@@ -28,8 +28,10 @@
             className: 'courses-listing-item',
 
             initialize: function() {
-                HtmlUtils.setHtml(this.tpl, HtmlUtils.template(CourseCardTemplate)({}));
-                console.log(this.tpl);
+                this.tpl = _.template(CourseCardTemplate);
+                //HtmlUtils.setHtml(this.$el, HtmlUtils.template(CourseCardTemplate)({}));
+                //console.log(this.$el);
+                // console.log(this.tpl);
 
             },
             render: function() {
