@@ -13,11 +13,6 @@
 
 % if course_discovery_enabled:
 <%block name="header_extras">
-  % for template_name in ["filter_bar", "filter", "facet", "facet_option"]:
-  <script type="text/template" id="${template_name}-tpl">
-      <%static:include path="courses_programs_search/templates/${template_name}.underscore" />
-  </script>
-  % endfor
   <%static:require_module module_name="courses_programs_search/js/discovery_factory" class_name="DiscoveryFactory">
     DiscoveryFactory(
       ${course_discovery_meanings | n, dump_js_escaped_json},

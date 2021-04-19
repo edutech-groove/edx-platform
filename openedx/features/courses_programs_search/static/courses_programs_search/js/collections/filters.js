@@ -1,5 +1,5 @@
 (function(define) {
-    define(['backbone', 'js/discovery/models/filter'], function(Backbone, Filter) {
+    define(['backbone', 'courses_programs_search/js/models/filter'], function(Backbone, Filter) {
         'use strict';
 
         return Backbone.Collection.extend({

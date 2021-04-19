@@ -2,8 +2,8 @@
     define([
         'underscore',
         'backbone',
-        'js/discovery/models/course_discovery',
-        'js/discovery/collections/filters'
+        'courses_programs_search/js/models/course_discovery',
+        'courses_programs_search/js/collections/filters'
     ], function(_, Backbone, CourseDiscovery, Filters) {
         'use strict';
 

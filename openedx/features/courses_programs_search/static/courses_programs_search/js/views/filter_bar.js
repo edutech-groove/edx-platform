@@ -5,22 +5,21 @@
         'backbone',
         'gettext',
         'courses_programs_search/js/models/filter',
-        'courses_programs_search/js/views/filter_label'
-    ], function($, _, Backbone, gettext, Filter, FilterLabel) {
+        'courses_programs_search/js/views/filter_label',
+        'text!courses_programs_search/templates/filter_bar.underscore'
+    ], function($, _, Backbone, gettext, Filter, FilterLabel, Filterbar) {
         'use strict';
 
         return Backbone.View.extend({
 
             el: '#filter-bar',
-            templateId: '#filter_bar-tpl',
-
             events: {
                 'click #clear-all-filters': 'clearAll',
                 'click li .discovery-button': 'clearFilter'
             },
 
             initialize: function() {
-                this.tpl = _.template($(this.templateId).html());
+                this.tpl = _.template(Filterbar);
                 this.render();
                 this.listenTo(this.collection, 'remove', this.hideIfEmpty);
                 this.listenTo(this.collection, 'add', this.addFilter);

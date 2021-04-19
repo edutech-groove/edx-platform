@@ -5,9 +5,8 @@
         'backbone',
         'gettext',
         'edx-ui-toolkit/js/utils/date-utils',
-        'edx-ui-toolkit/js/utils/html-utils',
         'text!courses_programs_search/templates/course_card.underscore'
-    ], function($, _, Backbone, gettext, DateUtils, HtmlUtils, CourseCardTemplate) {
+    ], function($, _, Backbone, gettext, DateUtils, CourseCardTemplate) {
         'use strict';
 
         function formatDate(date, userLanguage, userTimezone) {
@@ -20,8 +19,6 @@
             };
             return DateUtils.localize(context);
         }
-        console.log("oooooooooooooo");
-        console.log(CourseCardTemplate);
         return Backbone.View.extend({
 
             tagName: 'li',
@@ -29,10 +26,6 @@
 
             initialize: function() {
                 this.tpl = _.template(CourseCardTemplate);
-                //HtmlUtils.setHtml(this.$el, HtmlUtils.template(CourseCardTemplate)({}));
-                //console.log(this.$el);
-                // console.log(this.tpl);
-
             },
             render: function() {
                 var data = _.clone(this.model.attributes);

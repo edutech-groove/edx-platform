@@ -2,8 +2,8 @@
     define([
         'underscore',
         'backbone',
-        'js/discovery/models/course_card',
-        'js/discovery/models/facet_option'
+        'courses_programs_search/js/models/course_card',
+        'courses_programs_search/js/models/facet_option'
     ], function(_, Backbone, CourseCard, FacetOption) {
         'use strict';
 
