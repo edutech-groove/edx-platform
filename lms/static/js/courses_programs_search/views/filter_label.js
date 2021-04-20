@@ -3,18 +3,18 @@
         'jquery',
         'underscore',
         'backbone',
-        'gettext',
-        'text!courses_programs_search/templates/filter.underscore'
-    ], function($, _, Backbone, gettext, Filter) {
+        'gettext'
+    ], function($, _, Backbone, gettext) {
         'use strict';
 
         return Backbone.View.extend({
 
             tagName: 'li',
+            templateId: '#filter-tpl',
             className: 'active-filter',
 
             initialize: function() {
-                this.tpl = _.template(filter);
+                this.tpl = _.template($('#filter-tpl').html());
                 this.listenTo(this.model, 'remove', this.remove);
                 this.listenTo(this.model, 'change', this.render);
             },

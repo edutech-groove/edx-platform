@@ -1,0 +1,3 @@
+<option data-facet="<%- facet %>" data-count="<%- count %>" data-value="<%- term %>" data-text="<%- name %>" value="<%- term %>" <%- selected ? 'selected' : '' %>>
+    <%- name %> (<%- count %>)
+</option>

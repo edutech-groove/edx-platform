@@ -11,7 +11,7 @@
 
             el: '.search-facets',
             events: {
-                'click li button': 'selectOption',
+                'change .text-select': 'selectOption',
                 'click .show-less': 'collapse',
                 'click .show-more': 'expand'
             },
@@ -84,11 +84,13 @@
 
             selectOption: function(event) {
                 var $target = $(event.currentTarget);
+                var value = $target.val();
+                var text = $target.find('option:selected').data('text')
                 this.trigger(
                 'selectOption',
                 $target.data('facet'),
-                $target.data('value'),
-                $target.data('text')
+                value,
+                text
             );
             }
 

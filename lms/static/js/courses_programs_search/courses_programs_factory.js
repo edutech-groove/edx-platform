@@ -1,9 +1,9 @@
 (function(define) {
     'use strict';
 
-    define(['backbone', 'courses_programs_search/js/models/search_state', 'courses_programs_search/js/collections/filters',
-        'courses_programs_search/js/views/search_form', 'courses_programs_search/js/views/courses_listing',
-        'courses_programs_search/js/views/filter_bar', 'courses_programs_search/js/views/refine_sidebar'],
+    define(['backbone', 'js/courses_programs_search/models/search_state', 'js/courses_programs_search/collections/filters',
+        'js/courses_programs_search/views/search_form', 'js/courses_programs_search/views/courses_listing',
+        'js/courses_programs_search/views/filter_bar', 'js/courses_programs_search/views/refine_sidebar'],
         function(Backbone, SearchState, Filters, SearchForm, CoursesListing, FilterBar, RefineSidebar) {
             return function(meanings, searchQuery, userLanguage, userTimezone) {
                 var dispatcher = _.extend({}, Backbone.Events);

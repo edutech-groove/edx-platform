@@ -30,6 +30,9 @@
                 });
 
                 dispatcher.listenTo(refineSidebar, 'selectOption', function(type, query, name) {
+                    console.log(type);
+                    console.log(query);
+                    console.log(name);
                     form.showLoadingIndicator();
                     if (filters.get(type)) {
                         removeFilter(type);

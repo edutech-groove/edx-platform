@@ -3,18 +3,18 @@
         'jquery',
         'underscore',
         'backbone',
-        'gettext',
-        'text!courses_programs_search/templates/facet.underscore'
-    ], function($, _, Backbone, gettext, Facet) {
+        'gettext'
+    ], function($, _, Backbone, gettext) {
         'use strict';
 
         return Backbone.View.extend({
 
             tagName: 'li',
+            templateId: '#search_facet-tpl',
             className: '',
 
             initialize: function() {
-                this.tpl = _.template(Facet);
+                this.tpl = _.template($(this.templateId).html());
             },
 
             render: function(type, name, term, count) {

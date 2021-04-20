@@ -13,7 +13,12 @@
 
 % if course_discovery_enabled:
 <%block name="header_extras">
-  <%static:require_module module_name="courses_programs_search/js/discovery_factory" class_name="DiscoveryFactory">
+  % for template_name in ["course_card", "filter_bar", "filter", "facet", "facet_option"]:
+  <script type="text/template" id="${template_name}-tpl">
+      <%static:include path="courses_programs_search/${template_name}.underscore" />
+  </script>
+  % endfor
+  <%static:require_module module_name="js/courses_programs_search/courses_programs_factory" class_name="DiscoveryFactory">
     DiscoveryFactory(
       ${course_discovery_meanings | n, dump_js_escaped_json},
       getParameterByName('search_query'),
@@ -27,26 +32,43 @@
 <%block name="pagetitle">${_("Courses")}</%block>
 
 <main id="main" aria-label="Content" tabindex="-1">
+    <section class="container search-header">
+      % if course_discovery_enabled:
+      <div id="discovery-form" role="search" aria-label="course" class="wrapper-search-context">
+        <!-- <div id="discovery-message" class="search-status-label"></div>-->
+        <span>Search Courses and Programs</span>
+        <form class="wrapper-search-input">
+          <label for="discovery-input" class="sr">${_('Search for a course')}</label>
+          <input id="discovery-input" class="discovery-input" placeholder="${_('Search for a course')}" type="text" style="width: 70%;
+          height: 43px;"/>
+          <button type="submit" class="button postfix discovery-submit" title="${_('Search')}">
+            <span class="icon fa fa-search" aria-hidden="true"></span>
+            <div aria-live="polite" aria-relevant="all">
+              <div id="loading-indicator" class="loading-spinner hidden">
+                <span class="icon fa fa-spinner fa-spin" aria-hidden="true"></span>
+                <span class="sr">${_('Loading')}</span>
+              </div>
+            </div>
+          </button>
+        </form>
+      </div>
+      % if course_discovery_enabled:
+      <aside aria-label="${_('Refine Your Search')}" class="search-facets phone-menu">
+        <h2 class="header-search-facets">${_('Refine Your Search')}</h2>
+        <section class="search-facets-lists">
+        </section>
+      </aside>
+      % endif
+      <div>
+        <ul>
+          <li class="tab-all">All</li>
+          <li class="tab-courses">Courses</li>
+          <li class="tab-programs">Programs</li>
+        </ul>
+      </div>
+    </section>
     <section class="find-courses">
       <section class="courses-container">
-        % if course_discovery_enabled:
-        <div id="discovery-form" role="search" aria-label="course" class="wrapper-search-context">
-          <div id="discovery-message" class="search-status-label"></div>
-          <form class="wrapper-search-input">
-            <label for="discovery-input" class="sr">${_('Search for a course')}</label>
-            <input id="discovery-input" class="discovery-input" placeholder="${_('Search for a course')}" type="text"/>
-            <button type="submit" class="button postfix discovery-submit" title="${_('Search')}">
-              <span class="icon fa fa-search" aria-hidden="true"></span>
-              <div aria-live="polite" aria-relevant="all">
-                <div id="loading-indicator" class="loading-spinner hidden">
-                  <span class="icon fa fa-spinner fa-spin" aria-hidden="true"></span>
-                  <span class="sr">${_('Loading')}</span>
-                </div>
-              </div>
-            </button>
-          </form>
-        </div>
-
         <div id="filter-bar" class="filters hide-phone is-collapsed">
         </div>
         % endif
@@ -74,13 +96,6 @@
             %endfor
           </ul>
         </div>
-        % if course_discovery_enabled:
-        <aside aria-label="${_('Refine Your Search')}" class="search-facets phone-menu">
-          <h2 class="header-search-facets">${_('Refine Your Search')}</h2>
-          <section class="search-facets-lists">
-          </section>
-        </aside>
-        % endif
       </section>
     </section>
 </main>

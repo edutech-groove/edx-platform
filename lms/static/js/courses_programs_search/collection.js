@@ -1,7 +1,7 @@
 (function(define) {
     define([
         'backbone',
-        'courses_programs_search/js/models/course_card'
+        'js/courses_programs_search/models/course_card'
     ], function(Backbone, CourseCard) {
         'use strict';
 

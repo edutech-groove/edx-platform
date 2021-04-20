@@ -2,8 +2,8 @@
     define([
         'underscore',
         'backbone',
-        'courses_programs_search/js/models/course_discovery',
-        'courses_programs_search/js/collections/filters'
+        'js/courses_programs_search/models/course_discovery',
+        'js/courses_programs_search/collections/filters'
     ], function(_, Backbone, CourseDiscovery, Filters) {
         'use strict';
 
@@ -52,10 +52,12 @@
 
             sendQuery: function(data) {
                 this.jqhxr && this.jqhxr.abort();
+                console.log(this.jqhxr);
                 this.jqhxr = this.discovery.fetch({
                     type: 'POST',
                     data: data
                 });
+                console.log(this.jqhxr);
                 return this.jqhxr;
             },
 

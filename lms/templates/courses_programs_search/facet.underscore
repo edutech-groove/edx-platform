@@ -1,0 +1,17 @@
+<h3 class="header-facet">
+    <%- displayName %>
+</h3>
+<select class="text-select" data-facet="<%- name %>" class="facet-list collapse">
+    <option data-facet="" data-count="" data-value="" data-text="" value="">All</option>
+    <%= HtmlUtils.ensureHtml(optionsHtml) %>
+</select>
+<% if (listIsHuge) { %>
+    <div class="toggle ">
+        <button class="show-more discovery-button">
+            <%- gettext("More") %>
+        </button>
+        <button class="show-less hidden discovery-button">
+            <%- gettext("Less") %>
+        </button>
+    </div>
+<% } %>

@@ -43,7 +43,7 @@
             'support/js/manage_user_factory',
             'teams/js/teams_tab_factory',
             'js/dateutil_factory',
-            'courses_programs_search/js/discovery_factory',
+            'js/courses_programs_search/courses_programs_factory',
         ]),
 
         /**
