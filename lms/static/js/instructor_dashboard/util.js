@@ -502,7 +502,7 @@
             '<div class="tb-body">';
 
             reportDownloadsData.forEach(function(item) {
-                table += '<div class="dl-item"><a rel="noopener" target="_blank" href="${item.url}"><i class="fa fa-download"></i><span>${item.name}</a></div>';
+                table += '<div class="dl-item"><a rel="noopener" target="_blank" href="' + item.url + '"><i class="fa fa-download"></i><span>' + item.name + '</a></div>';
             });
 
             table += '</div>';
