@@ -15,11 +15,15 @@
             searchTerm: '',
             terms: {},
             jqhxr: null,
+            searchingType: 'discovery',
 
             initialize: function() {
                 this.discovery = new CourseDiscovery();
+                this.program = new CourseDiscovery(true);
                 this.listenTo(this.discovery, 'sync', this.onSync, this);
                 this.listenTo(this.discovery, 'error', this.onError, this);
+                this.listenTo(this.program, 'sync', this.onSync, this);
+                this.listenTo(this.program, 'error', this.onError, this);
             },
 
             performSearch: function(searchTerm, otherTerms) {
@@ -28,13 +32,13 @@
                 if (otherTerms) {
                     this.terms = otherTerms;
                 }
-                this.sendQuery(this.buildQuery(0));
+                this.sendQuery(this.buildQuery());
             },
 
             refineSearch: function(terms) {
                 this.reset();
                 this.terms = terms;
-                this.sendQuery(this.buildQuery(0));
+                this.sendQuery(this.buildQuery());
             },
 
             loadNextPage: function() {
@@ -46,34 +50,32 @@
         // private
 
             hasNextPage: function() {
-                var total = this.discovery.get('totalCount');
+                var total = this[this.searchingType].get('totalCount');
                 return total - ((this.page + 1) * this.pageSize) > 0;
             },
 
             sendQuery: function(data) {
                 this.jqhxr && this.jqhxr.abort();
-                console.log(this.jqhxr);
-                this.jqhxr = this.discovery.fetch({
+                this.jqhxr = this[this.searchingType].fetch({
                     type: 'POST',
                     data: data
                 });
-                console.log(this.jqhxr);
                 return this.jqhxr;
             },
 
-            buildQuery: function(pageIndex) {
+            buildQuery: function() {
                 var data = {
                     search_string: this.searchTerm,
                     page_size: this.pageSize,
-                    page_index: pageIndex
+                    page_index: this.page
                 };
                 _.extend(data, this.terms);
                 return data;
             },
 
             reset: function() {
-                this.discovery.reset();
-                this.page = 0;
+                this[this.searchingType].reset();
+                // this.page = 0;
                 this.errorMessage = '';
             },
 
@@ -85,15 +87,15 @@
             },
 
             onSync: function(collection, response, options) {
-                var total = this.discovery.get('totalCount');
+                var total = this[this.searchingType].get('totalCount');
                 var originalSearchTerm = this.searchTerm;
                 if (options.data.page_index === 0) {
                     if (total === 0) {
                     // list all courses
                         this.cachedDiscovery().done(function(cached) {
-                            this.discovery.courseCards.reset(cached.courseCards.toJSON());
-                            this.discovery.facetOptions.reset(cached.facetOptions.toJSON());
-                            this.discovery.set('latestCount', cached.get('latestCount'));
+                            this[this.searchingType].courseCards.reset(cached.courseCards.toJSON());
+                            this[this.searchingType].facetOptions.reset(cached.facetOptions.toJSON());
+                            this[this.searchingType].set('latestCount', cached.get('latestCount'));
                             this.trigger('search', originalSearchTerm, total);
                         });
                         this.searchTerm = '';
@@ -101,7 +103,7 @@
                     } else {
                         _.each(this.terms, function(term, facet) {
                             if (facet !== 'search_query') {
-                                var option = this.discovery.facetOptions.findWhere({
+                                var option = this[this.searchingType].facetOptions.findWhere({
                                     facet: facet,
                                     term: term
                                 });

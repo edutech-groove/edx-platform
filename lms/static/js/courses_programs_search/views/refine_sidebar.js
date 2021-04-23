@@ -93,7 +93,6 @@
                 text
             );
             }
-
         });
     });
 }(define || RequireJS.define));

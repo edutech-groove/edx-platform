@@ -5,6 +5,7 @@
   from openedx.core.djangolib.js_utils import js_escaped_string, dump_js_escaped_json
 %>
 <%inherit file="../main.html" />
+<script  type="text/javascript" src="${static.url('js/customize/jquery.simplepagination.js')}"></script>
 <%
   course_discovery_enabled = settings.FEATURES.get('ENABLE_COURSE_DISCOVERY')
 %>
@@ -18,8 +19,8 @@
       <%static:include path="courses_programs_search/${template_name}.underscore" />
   </script>
   % endfor
-  <%static:require_module module_name="js/courses_programs_search/courses_programs_factory" class_name="DiscoveryFactory">
-    DiscoveryFactory(
+  <%static:require_module module_name="js/courses_programs_search/courses_programs_factory" class_name="ProgramsFactory">
+    ProgramsFactory(
       ${course_discovery_meanings | n, dump_js_escaped_json},
       getParameterByName('search_query'),
       "${user_language | n, js_escaped_string}",
@@ -59,13 +60,16 @@
         </section>
       </aside>
       % endif
-      <div>
+      <div id="tab-search">
         <ul>
-          <li class="tab-all">All</li>
-          <li class="tab-courses">Courses</li>
-          <li class="tab-programs">Programs</li>
+          <li><a href="/search/" data-tab-name="all">All</a></li>
+          <li><a href="?tab=courses" data-tab-name="discovery">Courses</a></li>
+          <li><a href="?tab=programs" data-tab-name="program">Programs</a></li>
         </ul>
       </div>
+    </section>
+    <section>
+      <div id="demo"></div>
     </section>
     <section class="find-courses">
       <section class="courses-container">
@@ -88,7 +92,7 @@
             </li>
             %endfor
           </ul>
-          <ul class="courses-listing courses-list">
+          <ul class="courses-listing courses-list" id="courseslist">
             %for course in courses:
             <li class="courses-listing-item">
               <%include file="../course.html" args="course=course" />

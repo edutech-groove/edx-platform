@@ -17,10 +17,46 @@
                 });
                 var listing;
                 var courseListingModel = search.discovery;
+                var programListingModel = search.program;
+                
+                $('#tab-search a').on('click.search', function(e) {
+                    e.preventDefault();
+                    var url = this.href;
+                    var tabName = $(this).data('tab-name');
+                    var state = { 'tabName': tabName };
+                    history.pushState(state, '', url);
+                    listing.model = tabName === 'discovery' ? courseListingModel : programListingModel;
+                    search.searchingType = tabName;
+                    form.doSearch();
+                });
+
+                $('#demo').pagination({
+                    items: 100,
+                    itemsOnPage: 10,
+                    onPageClick(pageNumber, event){
+                        // alert(pageNumber);
+                        search.page = pageNumber - 1;
+                        form.doSearch();
+                    }
+                   
+                });
+
+                window.onpopstate = function (event){
+                    console.log(event.state);
+                    // todo
+                    form.doSearch();
+                }
+
                 courseListingModel.userPreferences = {
                     userLanguage: userLanguage,
                     userTimezone: userTimezone
                 };
+
+                programListingModel.userPreferences = {
+                    userLanguage: userLanguage,
+                    userTimezone: userTimezone
+                };
+
                 listing = new CoursesListing({model: courseListingModel});
                 dispatcher.listenTo(form, 'search', function(query) {
                     filters.reset();
