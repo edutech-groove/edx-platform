@@ -16,7 +16,9 @@
                 start: '',
                 image_url: '',
                 org: '',
-                id: ''
+                id: '',
+                programtype: '',
+                course_count: '',
             }
         });
     });

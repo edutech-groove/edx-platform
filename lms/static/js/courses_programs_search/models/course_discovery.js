@@ -21,7 +21,8 @@
 
             initialize: function(isPrograms) {
                 if (isPrograms) {
-                    // this.url = 'https://6082303f827b350017cfbd6c.mockapi.io/api/v1/program_discovery';
+                    this.url = '/search/program_discovery/';
+                    this.isPrograms = true;
                 }
                 this.courseCards = new Backbone.Collection([], {model: CourseCard});
                 this.facetOptions = new Backbone.Collection([], {model: FacetOption});
@@ -29,11 +30,15 @@
             },
 
             parse: function(response) {
-                var courses = response.results || [];
-                courses = this.datafake;
-                var facets = response.facets || {};
-                this.courseCards.add(_.pluck(courses, 'data'));
-
+                if (this.isPrograms){
+                    var courses = response || [];
+                    this.courseCards.add(courses);
+                }
+                else{
+                    var courses = response.results || [];
+                    var facets = response.facets || {};
+                    this.courseCards.add(_.pluck(courses, 'data'));
+                }
                 this.set({
                     totalCount: response.total,
                     latestCount: courses.length

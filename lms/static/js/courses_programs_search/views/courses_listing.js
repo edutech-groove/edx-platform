@@ -4,8 +4,9 @@
         'underscore',
         'backbone',
         'gettext',
-        'js/courses_programs_search/views/course_card'
-    ], function($, _, Backbone, gettext, CourseCardView) {
+        'js/courses_programs_search/views/course_card',
+        'js/courses_programs_search/views/program_card'
+    ], function($, _, Backbone, gettext, CourseCardView, ProgramCardView) {
         'use strict';
 
         return Backbone.View.extend({

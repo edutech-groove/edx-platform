@@ -12,11 +12,15 @@
                 <span class="course-code"><%- content.number %></span>
                 <span class="course-title"><%- content.display_name %></span>
             </h2>
+
             <div class="course-date" aria-hidden="true">
+            <% if (programtype) { %> <%- programtype %> (<%-course_count%>) courses <% } %>
+            <% if (start){%>
                 <%- interpolate(
-                      gettext("Starts: %(start_date)s"),
-                      { start_date: start }, true
+                        gettext("Starts: %(start_date)s"),
+                        { start_date: start }, true
                     ) %>
+            <%}%>
             </div>
         </section>
         <div class="sr">
