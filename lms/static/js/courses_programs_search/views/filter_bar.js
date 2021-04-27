@@ -38,6 +38,7 @@
                 var label = new FilterLabel({model: filter});
                 this.$ul.append(label.render().el);
                 this.show();
+                this.$el.show();
             },
 
             hideIfEmpty: function() {
@@ -49,6 +50,7 @@
             resetFilters: function() {
                 this.$ul.empty();
                 this.hide();
+                this.$el.hide();
             },
 
             clearFilter: function(event) {
@@ -68,6 +70,7 @@
             hide: function() {
                 this.$ul.empty();
                 this.$el.addClass('is-collapsed');
+                this.$el.hide();
             }
 
         });

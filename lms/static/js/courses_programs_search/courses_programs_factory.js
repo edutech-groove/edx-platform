@@ -28,17 +28,20 @@
                     listing.model = tabName === 'discovery' ? courseListingModel : programListingModel;
                     search.searchingType = tabName;
                     form.doSearch();
+                    $('#tab-search > ul > li').removeClass('active');
+                    $(this).parentsUntil('ul').addClass('active');
                 });
 
-                $('#demo').pagination({
+                $('#pagination').pagination({
                     items: 100,
                     itemsOnPage: 10,
                     onPageClick(pageNumber, event){
                         // alert(pageNumber);
                         search.page = pageNumber - 1;
                         form.doSearch();
-                    }
-                   
+                    },
+                    prevText: '<svg width="5" height="9"><use xlink:href="#paging-prev-icon"></use></svg>',
+                    nextText: '<svg width="5" height="9"><use xlink:href="#paging-next-icon"></use></svg>'
                 });
 
                 window.onpopstate = function (event){

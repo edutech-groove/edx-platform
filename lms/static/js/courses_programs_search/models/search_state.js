@@ -50,17 +50,21 @@
         // private
 
             hasNextPage: function() {
-                var total = this[this.searchingType].get('totalCount');
-                return total - ((this.page + 1) * this.pageSize) > 0;
+                if (this[this.searchingType]) {
+                    var total = this[this.searchingType].get('totalCount');
+                    return total - ((this.page + 1) * this.pageSize) > 0;
+                }
             },
 
             sendQuery: function(data) {
-                this.jqhxr && this.jqhxr.abort();
-                this.jqhxr = this[this.searchingType].fetch({
-                    type: 'POST',
-                    data: data
-                });
-                return this.jqhxr;
+                if (this[this.searchingType]) {
+                    this.jqhxr && this.jqhxr.abort();
+                    this.jqhxr = this[this.searchingType].fetch({
+                        type: 'POST',
+                        data: data
+                    });
+                    return this.jqhxr;
+                }
             },
 
             buildQuery: function() {
@@ -74,7 +78,9 @@
             },
 
             reset: function() {
-                this[this.searchingType].reset();
+                if (this[this.searchingType]) {
+                    this[this.searchingType].reset();
+                }
                 // this.page = 0;
                 this.errorMessage = '';
             },

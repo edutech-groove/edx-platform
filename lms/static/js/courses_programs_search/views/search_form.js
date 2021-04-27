@@ -14,6 +14,7 @@
                 this.$searchButton = this.$el.find('button');
                 this.$message = this.$el.find('#discovery-message');
                 this.$loadingIndicator = this.$el.find('#loading-indicator');
+                this.$searchText = this.$el.find('#search-text');
             },
 
             submitForm: function(event) {
@@ -36,10 +37,12 @@
 
             showLoadingIndicator: function() {
                 this.$loadingIndicator.removeClass('hidden');
+                this.$searchText.addClass('hidden');
             },
 
             hideLoadingIndicator: function() {
                 this.$loadingIndicator.addClass('hidden');
+                this.$searchText.removeClass('hidden');
             },
 
             showFoundMessage: function(count) {

@@ -1,4 +1,13 @@
 <div class="filters-inner">
     <ul class="active-filters facet-list"></ul>
-    <button id="clear-all-filters" class="clear-filters flt-right discovery-button"><%- gettext('Clear All') %></button>
+    <button id="clear-all-filters" class="clear-filters flt-right discovery-button active">
+        <div class="chip-container">
+            <%- gettext('Clear All') %>
+            <span class="clear">
+                <svg>
+                    <use xlink:href="#circle-close"></use>
+                </svg>
+            </span>
+        </div>
+    </button>
 </div>

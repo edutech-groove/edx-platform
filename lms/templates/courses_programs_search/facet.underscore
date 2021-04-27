@@ -1,7 +1,4 @@
-<h3 class="header-facet">
-    <%- displayName %>
-</h3>
-<select class="text-select" data-facet="<%- name %>" class="facet-list collapse">
+<select class="text-select" data-facet="<%- name %>" class="facet-list collapse" buttonText="<%- displayName %>">
     <option data-facet="" data-count="" data-value="" data-text="" value="">All</option>
     <%= HtmlUtils.ensureHtml(optionsHtml) %>
 </select>
