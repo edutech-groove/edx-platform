@@ -78,9 +78,9 @@
             },
 
             reset: function() {
-                if (this[this.searchingType]) {
-                    this[this.searchingType].reset();
-                }
+                // if (this[this.searchingType]) {
+                //     this[this.searchingType].reset();
+                // }
                 // this.page = 0;
                 this.errorMessage = '';
             },
@@ -93,6 +93,7 @@
             },
 
             onSync: function(collection, response, options) {
+                // console.log(options);
                 var total = this[this.searchingType].get('totalCount');
                 var originalSearchTerm = this.searchTerm;
                 if (options.data.page_index === 0) {
@@ -107,15 +108,17 @@
                         this.searchTerm = '';
                         this.terms = {};
                     } else {
-                        _.each(this.terms, function(term, facet) {
+                        _.each(this.terms, function(terms, facet) {
                             if (facet !== 'search_query') {
-                                var option = this[this.searchingType].facetOptions.findWhere({
-                                    facet: facet,
-                                    term: term
-                                });
-                                if (option) {
-                                    option.set('selected', true);
-                                }
+                                this[this.searchingType].facetOptions.each(function(option) {
+                                    option.set('selected', false);
+                                    
+                                    terms.forEach(function (term) {
+                                        if (option.attributes.facet == facet && option.attributes.term == term.key) {
+                                            option.set('selected', true);
+                                        }
+                                    });
+                                })
                             }
                         }, this);
                         this.trigger('search', this.searchTerm, total);

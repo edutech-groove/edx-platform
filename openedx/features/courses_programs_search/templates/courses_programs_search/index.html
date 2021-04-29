@@ -71,37 +71,25 @@
         </div>
       </div>
     </section>
-    <section class="title">
+    <section class="page-title">
       <div class="container">
-        <div id="pagination"></div>
+        <div class="page-title-container">
+          <div class="title">
+            <h3 id="main-title"></h3>
+            <p id="records-count"></p>
+          </div>
+          <div id="pagination"></div>
+        </div>
       </div>
     </section>
-    <section class="find-courses">
+    <section class="courses-programs-list">
       <div class="container">
         <section class="courses-container">
           % endif
 
           <div class="courses${'' if course_discovery_enabled else ' no-course-discovery'}" role="region" aria-label="${_('List of Courses')}">
-            <ul class="journal-list">
-              % for bundle in journal_info.get('journal_bundles'):
-              <li class="courses-listing-item">
-                <%include file="../journals/bundle_card.html" args="bundle=bundle" />
-              </li>
-              % endfor
-            </ul>
-            <ul class="journal-list">
-              %for journal in journal_info.get('journals'):
-              <li class="courses-listing-item">
-                <%include file="../journals/journal_card.html" args="journal=journal" />
-              </li>
-              %endfor
-            </ul>
+            
             <ul class="courses-listing courses-list" id="courseslist">
-              %for course in courses:
-              <li class="courses-listing-item">
-                <%include file="../course.html" args="course=course" />
-              </li>
-              %endfor
             </ul>
           </div>
         </section>

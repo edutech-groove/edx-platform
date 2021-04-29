@@ -84,13 +84,19 @@
 
             selectOption: function(event) {
                 var $target = $(event.currentTarget);
-                var value = $target.val();
-                var text = $target.find('option:selected').data('text')
+                var value = [];
+                if ($target.val()) {
+                    $target.val().forEach(function (item) {
+                        value.push({
+                            key: item,
+                            val: $target.find('option[data-value=' + item + ']').data('text')
+                        });
+                    });
+                }
                 this.trigger(
                 'selectOption',
                 $target.data('facet'),
-                value,
-                text
+                value
             );
             }
         });

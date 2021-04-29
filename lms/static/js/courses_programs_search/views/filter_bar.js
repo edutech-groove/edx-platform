@@ -23,7 +23,8 @@
                 this.tpl = _.template($(this.templateId).html());
                 this.render();
                 this.listenTo(this.collection, 'remove', this.hideIfEmpty);
-                this.listenTo(this.collection, 'add', this.addFilter);
+                //this.listenTo(this.collection, 'add', this.addFilter);
+                this.listenTo(this.collection, 'add', this.reGenerateFilter);
                 this.listenTo(this.collection, 'reset', this.resetFilters);
             },
 
@@ -34,14 +35,42 @@
                 return this;
             },
 
-            addFilter: function(filter) {
-                var label = new FilterLabel({model: filter});
-                this.$ul.append(label.render().el);
-                this.show();
-                this.$el.show();
+            reGenerateFilter: function(filter) {
+                // console.log(filter);
+                if (filter && filter.attributes && filter.attributes.query) {
+                    // console.log(filter);
+                    var _this = this;
+                    // filter.attributes.query.forEach(function (item) {
+                    //     var tempFilter = filter.clone();
+                    //     tempFilter.attributes.query = item;
+                    //     var label = new FilterLabel({model: tempFilter});
+                    //     console.log(_this.collection);
+                    //     _this.$ul.append(label.render().el);
+                    // });
+                    this.show();
+                    this.$el.show();
+                }
             },
 
-            hideIfEmpty: function() {
+            addFilter: function(filter) {
+                // console.log(filter);
+                if (filter && filter.attributes && filter.attributes.query) {
+                    // console.log(filter);
+                    var _this = this;
+                    // filter.attributes.query.forEach(function (item) {
+                    //     var tempFilter = filter.clone();
+                    //     tempFilter.attributes.query = item;
+                    //     var label = new FilterLabel({model: tempFilter});
+                    //     console.log(_this.collection);
+                    //     _this.$ul.append(label.render().el);
+                    // });
+                    this.show();
+                    this.$el.show();
+                }
+            },
+
+            hideIfEmpty: function(filter) {
+                console.log(this.collection);
                 if (this.collection.isEmpty()) {
                     this.hide();
                 }

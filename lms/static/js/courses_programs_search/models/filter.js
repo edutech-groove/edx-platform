@@ -6,8 +6,8 @@
             idAttribute: 'type',
             defaults: {
                 type: 'search_query',
-                query: '',
-                name: ''
+                query: {},
+                // name: ''
             }
         });
     });

@@ -6,6 +6,7 @@
         'js/courses_programs_search/views/filter_bar', 'js/courses_programs_search/views/refine_sidebar'],
         function(Backbone, SearchState, Filters, SearchForm, CoursesListing, FilterBar, RefineSidebar) {
             return function(meanings, searchQuery, userLanguage, userTimezone) {
+                activateMenuTab($('#tab-search a[href^="' + (location.search ? location.search : '/' + location.pathname.split("/")[1]) + '"]'));
                 var dispatcher = _.extend({}, Backbone.Events);
                 var search = new SearchState();
                 var filters = new Filters();
@@ -28,8 +29,7 @@
                     listing.model = tabName === 'discovery' ? courseListingModel : programListingModel;
                     search.searchingType = tabName;
                     form.doSearch();
-                    $('#tab-search > ul > li').removeClass('active');
-                    $(this).parentsUntil('ul').addClass('active');
+                    activateMenuTab($(this));
                 });
 
                 $('#pagination').pagination({
@@ -45,8 +45,8 @@
                 });
 
                 window.onpopstate = function (event){
-                    console.log(event.state);
                     // todo
+                    activateMenuTab($('#tab-search [data-tab-name=' + event.state.tabName + ']'));
                     form.doSearch();
                 }
 
@@ -67,14 +67,25 @@
                     search.performSearch(query, filters.getTerms());
                 });
 
-                dispatcher.listenTo(refineSidebar, 'selectOption', function(type, query, name) {
+                dispatcher.listenTo(refineSidebar, 'selectOption', function(type, query) {
                     form.showLoadingIndicator();
-                    if (filters.get(type)) {
-                        removeFilter(type);
-                    } else {
-                        filters.add({type: type, query: query, name: name});
-                        search.refineSearch(filters.getTerms());
-                    }
+                    // if (filters.get(type)) {
+                    //     removeFilter(type);
+                    // } else {
+                            if (filters.get(type)) {
+                                removeFilter(type);
+                            }
+                        if (query && query.length) {
+                            // query.forEach(function (item) {
+                                 filters.add({type: type, query: query});
+                            // });
+
+                            console.log(filters);
+                        }
+
+                        // console.log(filters);
+                        // search.refineSearch(filters.getTerms());
+                    // }
                 });
 
                 dispatcher.listenTo(filterBar, 'clearFilter', removeFilter);
@@ -107,6 +118,7 @@
                     form.hideLoadingIndicator();
                     listing.render();
                     refineSidebar.render();
+                    $('.page-title .title #records-count').text(listing.model.datafake.length + ' results');
                 });
 
                 dispatcher.listenTo(search, 'error', function() {
@@ -118,17 +130,25 @@
                 form.doSearch(searchQuery);
 
                 function removeFilter(type) {
+
+                    // console.log(filters);
                     form.showLoadingIndicator();
                     filters.remove(type);
                     if (type === 'search_query') {
                         form.doSearch('');
                     } else {
-                        search.refineSearch(filters.getTerms());
+                        // search.refineSearch(filters.getTerms());
                     }
                 }
 
                 function quote(string) {
                     return '"' + string + '"';
+                }
+
+                function activateMenuTab(nav) {
+                    $('#tab-search > ul > li').removeClass('active');
+                    nav.parentsUntil('ul').addClass('active');
+                    $('.page-title .title #main-title').text(nav.text());
                 }
             };
         });

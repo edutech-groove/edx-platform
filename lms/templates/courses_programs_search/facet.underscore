@@ -1,5 +1,4 @@
-<select class="text-select" data-facet="<%- name %>" class="facet-list collapse" buttonText="<%- displayName %>">
-    <option data-facet="" data-count="" data-value="" data-text="" value="">All</option>
+<select class="text-select" data-facet="<%- name %>" class="facet-list collapse" buttonText="<%- displayName %>" multiple>
     <%= HtmlUtils.ensureHtml(optionsHtml) %>
 </select>
 <% if (listIsHuge) { %>

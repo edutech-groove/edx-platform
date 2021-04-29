@@ -11,7 +11,7 @@
 
             tagName: 'li',
             templateId: '#filter-tpl',
-            className: 'active-filter',
+            className: 'active-filter sdfsdf',
 
             initialize: function() {
                 this.tpl = _.template($('#filter-tpl').html());
@@ -21,7 +21,7 @@
 
             render: function() {
                 var data = _.clone(this.model.attributes);
-                data.name = data.name || data.query;
+                data.name = data.query.val || data.query.key;
                 this.className = data.type;
                 this.$el.html(this.tpl(data));
                 return this;
