@@ -21,6 +21,8 @@
 
             render: function() {
                 this.$list.empty();
+                var count = this.model.totalcount();
+                $('#page-count').text(count);
                 this.renderItems();
                 return this;
             },
@@ -32,6 +34,7 @@
 
             renderItems: function() {
                 /* eslint no-param-reassign: [2, { "props": true }] */
+                this.$list.empty();
                 var latest = this.model.latest();
                 var items = latest.map(function(result) {
                     result.userPreferences = this.model.userPreferences;

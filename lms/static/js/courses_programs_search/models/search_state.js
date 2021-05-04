@@ -11,7 +11,7 @@
         return Backbone.Model.extend({
 
             page: 0,
-            pageSize: 20,
+            pageSize: 1,
             searchTerm: '',
             terms: {},
             jqhxr: null,
@@ -100,6 +100,7 @@
                         });
                         this.searchTerm = '';
                         this.terms = {};
+                        this.trigger('updatepaging', total)
                     } else {
                         _.each(this.terms, function(term, facet) {
                             if (facet !== 'search_query') {

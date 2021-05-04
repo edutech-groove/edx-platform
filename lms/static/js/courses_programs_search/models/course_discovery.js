@@ -33,17 +33,20 @@
                 if (this.isPrograms){
                     var courses = response || [];
                     this.courseCards.add(courses);
+                    this.set({
+                        totalCount: response[0].count,
+                        latestCount: courses.length
+                    });
                 }
-                else{
+                else {
                     var courses = response.results || [];
                     var facets = response.facets || {};
                     this.courseCards.add(_.pluck(courses, 'data'));
+                    this.set({
+                        totalCount: response.total,
+                        latestCount: courses.length
+                    });
                 }
-                this.set({
-                    totalCount: response.total,
-                    latestCount: courses.length
-                });
-
                 var options = this.facetOptions;
                 _(facets).each(function(obj, key) {
                     _(obj.terms).each(function(count, term) {
@@ -63,6 +66,10 @@
                 });
                 this.courseCards.reset();
                 this.facetOptions.reset();
+            },
+
+            totalcount: function() {
+                return this.get('totalCount');
             },
 
             latest: function() {

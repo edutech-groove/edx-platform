@@ -27,18 +27,8 @@
                     history.pushState(state, '', url);
                     listing.model = tabName === 'discovery' ? courseListingModel : programListingModel;
                     search.searchingType = tabName;
-                    form.doSearch();
-                });
-
-                $('#demo').pagination({
-                    items: 100,
-                    itemsOnPage: 10,
-                    onPageClick(pageNumber, event){
-                        // alert(pageNumber);
-                        search.page = pageNumber - 1;
-                        form.doSearch();
-                    }
-                   
+                    search.page = 0;
+                    form.doSearch('');
                 });
 
                 window.onpopstate = function (event){
@@ -88,6 +78,18 @@
                     listing.renderNext();
                 });
 
+                dispatcher.listenTo(search, 'updatepaging', function(total) {
+                    $('#demo').pagination({
+                        items: total,
+                        itemsOnPage: 1,
+                        onPageClick(pageNumber, event){
+                            // alert(pageNumber);
+                            search.page = pageNumber - 1;
+                            form.doSearch();
+                        }
+                    });
+                });
+
                 dispatcher.listenTo(search, 'search', function(query, total) {
                     if (total > 0) {
                         form.showFoundMessage(total);
@@ -104,6 +106,17 @@
                     form.hideLoadingIndicator();
                     listing.render();
                     refineSidebar.render();
+                    var count = parseInt($('#page-count').text());
+                    $('#demo').pagination({
+                        items: count,
+                        itemsOnPage: 1,
+                        onPageClick(pageNumber, event){
+                            // alert(pageNumber);
+                            search.page = pageNumber - 1;
+                            form.doSearch();
+                        }
+                    });
+
                 });
 
                 dispatcher.listenTo(search, 'error', function() {
