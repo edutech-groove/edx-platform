@@ -16,16 +16,17 @@
 
             events: {
                 'click #clear-all-filters': 'clearAll',
-                'click li .discovery-button': 'clearFilter'
+                'click #toggle-view-filters': 'toggleViewFilters',
+                'click li .discovery-button': 'clearFilter',
             },
 
             initialize: function() {
                 this.tpl = _.template($(this.templateId).html());
                 this.render();
                 this.listenTo(this.collection, 'remove', this.hideIfEmpty);
-                //this.listenTo(this.collection, 'add', this.addFilter);
                 this.listenTo(this.collection, 'add', this.reGenerateFilter);
                 this.listenTo(this.collection, 'reset', this.resetFilters);
+                this.listenTo(this.collection, 'change', this.reGenerateFilter);
             },
 
             render: function() {
@@ -35,42 +36,42 @@
                 return this;
             },
 
-            reGenerateFilter: function(filter) {
-                // console.log(filter);
-                if (filter && filter.attributes && filter.attributes.query) {
-                    // console.log(filter);
-                    var _this = this;
-                    // filter.attributes.query.forEach(function (item) {
-                    //     var tempFilter = filter.clone();
-                    //     tempFilter.attributes.query = item;
-                    //     var label = new FilterLabel({model: tempFilter});
-                    //     console.log(_this.collection);
-                    //     _this.$ul.append(label.render().el);
-                    // });
+            reGenerateFilter: function() {
+                this.numOfChipTags = 0;
+                this.hide();
+                var _this = this;
+                this.collection.models.forEach(function (filter) {
+                    if (filter && filter.attributes && filter.attributes.query) {
+                        filter.attributes.query.forEach(function (item) {
+                            _this.numOfChipTags ++;
+                            var tempFilter = filter.clone();
+                            tempFilter.attributes.query = item;
+                            var label = new FilterLabel({model: tempFilter});
+                            var labelEl = label.render().el
+
+                            if (_this.numOfChipTags > 3) {
+                                $(labelEl).addClass('extra hidden');
+                            }
+
+                            _this.$ul.append(labelEl);
+                        });
+                    }
+                });
+
+                if (this.numOfChipTags > 0) {
                     this.show();
                     this.$el.show();
+                    if (this.numOfChipTags > 3) {
+                        this.$el.find('#toggle-view-filters').show().text('+' + (this.numOfChipTags - 3));
+                    } else {
+                        this.$el.find('#toggle-view-filters').hide().empty();
+                    }
                 }
             },
 
-            addFilter: function(filter) {
-                // console.log(filter);
-                if (filter && filter.attributes && filter.attributes.query) {
-                    // console.log(filter);
-                    var _this = this;
-                    // filter.attributes.query.forEach(function (item) {
-                    //     var tempFilter = filter.clone();
-                    //     tempFilter.attributes.query = item;
-                    //     var label = new FilterLabel({model: tempFilter});
-                    //     console.log(_this.collection);
-                    //     _this.$ul.append(label.render().el);
-                    // });
-                    this.show();
-                    this.$el.show();
-                }
-            },
-
-            hideIfEmpty: function(filter) {
-                console.log(this.collection);
+            hideIfEmpty: function() {
+                this.reGenerateFilter();
+                
                 if (this.collection.isEmpty()) {
                     this.hide();
                 }
@@ -85,10 +86,12 @@
             clearFilter: function(event) {
                 var $target = $(event.currentTarget);
                 var filter = this.collection.get($target.data('type'));
-                this.trigger('clearFilter', filter.id);
+                var value = $target.data('value');
+                this.trigger('clearFilter', filter.id, value);
             },
 
             clearAll: function(event) {
+                this.collection.reset();
                 this.trigger('clearAll');
             },
 
@@ -100,6 +103,17 @@
                 this.$ul.empty();
                 this.$el.addClass('is-collapsed');
                 this.$el.hide();
+            },
+
+            toggleViewFilters: function() {
+                this.isViewMoreFilter = !this.isViewMoreFilter;
+                if (this.isViewMoreFilter) {
+                    this.$el.find('#toggle-view-filters').text('View less');
+                    this.$ul.find('.extra').removeClass('hidden');
+                } else {
+                    this.$el.find('#toggle-view-filters').text('+' + (this.numOfChipTags - 3));
+                    this.$ul.find('.extra').addClass('hidden');
+                }
             }
 
         });

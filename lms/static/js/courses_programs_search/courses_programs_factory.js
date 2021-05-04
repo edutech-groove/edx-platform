@@ -10,6 +10,7 @@
                 var dispatcher = _.extend({}, Backbone.Events);
                 var search = new SearchState();
                 var filters = new Filters();
+                filters.comparator = 'index';
                 var form = new SearchForm();
                 var filterBar = new FilterBar({collection: filters});
                 var refineSidebar = new RefineSidebar({
@@ -67,25 +68,15 @@
                     search.performSearch(query, filters.getTerms());
                 });
 
-                dispatcher.listenTo(refineSidebar, 'selectOption', function(type, query) {
+                dispatcher.listenTo(refineSidebar, 'selectOption', function(type, index, query) {
                     form.showLoadingIndicator();
-                    // if (filters.get(type)) {
-                    //     removeFilter(type);
-                    // } else {
-                            if (filters.get(type)) {
-                                removeFilter(type);
-                            }
-                        if (query && query.length) {
-                            // query.forEach(function (item) {
-                                 filters.add({type: type, query: query});
-                            // });
-
-                            console.log(filters);
+                        if (filters.get(type)) {
+                            removeFilter(type);
                         }
-
-                        // console.log(filters);
-                        // search.refineSearch(filters.getTerms());
-                    // }
+                        if (query) {
+                            filters.add({type: type, query: query, index: index});
+                        }
+                        search.refineSearch(filters.getTerms());
                 });
 
                 dispatcher.listenTo(filterBar, 'clearFilter', removeFilter);
@@ -129,15 +120,30 @@
                 // kick off search on page refresh
                 form.doSearch(searchQuery);
 
-                function removeFilter(type) {
-
-                    // console.log(filters);
+                function removeFilter(type, value = null) {
                     form.showLoadingIndicator();
-                    filters.remove(type);
+
+                    if (value) {
+                        var query = _.clone(filters.get(type).attributes.query)
+                        var queryIndex = query.findIndex(function (item) { return item.key == value; });
+                        if (queryIndex > -1) {
+                            query.splice(queryIndex, 1);
+                        }
+                        if (!query.length) {
+                            console.log(filters.get(type));
+                            filters.remove(type);
+                        } else {
+                            filters.get(type).set({query: query});
+                            console.log(filters.get(type));
+                        }
+                    } else {
+                        filters.remove(type);
+                    }
+
                     if (type === 'search_query') {
                         form.doSearch('');
                     } else {
-                        // search.refineSearch(filters.getTerms());
+                        search.refineSearch(filters.getTerms());
                     }
                 }
 

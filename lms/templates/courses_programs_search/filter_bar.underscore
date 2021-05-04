@@ -1,5 +1,6 @@
 <div class="filters-inner">
     <ul class="active-filters facet-list"></ul>
+    <button id="toggle-view-filters" class="toggle-view-filters-button" style="display: none;"></button>
     <button id="clear-all-filters" class="clear-filters flt-right discovery-button active">
         <div class="chip-container">
             <%- gettext('Clear All') %>

@@ -41,9 +41,10 @@
                 }, this));
             },
 
-            renderFacet: function(facetKey, options) {
+            renderFacet: function(facetKey, options, index) {
                 return this.facetTpl({
                     name: facetKey,
+                    index: index,
                     displayName: this.facetName(facetKey),
                     optionsHtml: this.renderOptions(options),
                     listIsHuge: (options.length > 9)
@@ -52,10 +53,12 @@
 
             render: function() {
                 var grouped = this.collection.groupBy('facet');
+                var index = 0;
                 var htmlSnippet = HtmlUtils.joinHtml.apply(
                 this, _.map(grouped, function(options, facetKey) {
                     if (options.length > 0) {
-                        return this.renderFacet(facetKey, options);
+                        index ++;
+                        return this.renderFacet(facetKey, options, index);
                     }
                 }, this)
             );
@@ -96,6 +99,7 @@
                 this.trigger(
                 'selectOption',
                 $target.data('facet'),
+                $target.data('index'),
                 value
             );
             }

@@ -93,7 +93,6 @@
             },
 
             onSync: function(collection, response, options) {
-                // console.log(options);
                 var total = this[this.searchingType].get('totalCount');
                 var originalSearchTerm = this.searchTerm;
                 if (options.data.page_index === 0) {
@@ -108,19 +107,24 @@
                         this.searchTerm = '';
                         this.terms = {};
                     } else {
-                        _.each(this.terms, function(terms, facet) {
-                            if (facet !== 'search_query') {
-                                this[this.searchingType].facetOptions.each(function(option) {
-                                    option.set('selected', false);
-                                    
-                                    terms.forEach(function (term) {
-                                        if (option.attributes.facet == facet && option.attributes.term == term.key) {
-                                            option.set('selected', true);
-                                        }
-                                    });
-                                })
-                            }
-                        }, this);
+                        var _this = this;
+                        this[this.searchingType].facetOptions.each(function(option) {
+                            option.set('selected', false);
+
+                            _.each(_this.terms, function(terms, facet) {
+                                if (facet !== 'search_query') {
+                                        
+                                        terms.forEach(function (term) {
+                                            if (option.attributes.facet == facet) {
+
+                                                if (option.attributes.term == term) {
+                                                    option.set('selected', true);
+                                                }
+                                            }
+                                        });
+                                }
+                            }, _this);
+                        })
                         this.trigger('search', this.searchTerm, total);
                     }
                 } else {

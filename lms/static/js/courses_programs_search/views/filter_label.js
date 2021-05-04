@@ -11,7 +11,7 @@
 
             tagName: 'li',
             templateId: '#filter-tpl',
-            className: 'active-filter sdfsdf',
+            className: 'active-filter',
 
             initialize: function() {
                 this.tpl = _.template($('#filter-tpl').html());

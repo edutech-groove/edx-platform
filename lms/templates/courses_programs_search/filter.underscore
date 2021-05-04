@@ -1,4 +1,4 @@
-  <button data-value="<%- query %>" class="facet-option discovery-button" data-type="<%- type %>">
+  <button data-value="<%- query['key'] %>" class="facet-option discovery-button" data-type="<%- type %>">
     <div class="chip-container">
       <span class="query"><%- name %></span>
       <span class="clear">
