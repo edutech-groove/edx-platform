@@ -48,6 +48,24 @@
                 window.onpopstate = function (event){
                     // todo
                     activateMenuTab($('#tab-search [data-tab-name=' + event.state.tabName + ']'));
+
+                    // console.log(event.state);
+
+                    var params = new URLSearchParams();
+                    var state = {};
+
+                    if (event.state.q) {
+                        params.append('q', event.state.q);
+                        state.q = event.state.q;
+                        $(form.$searchField).val(event.state.q);
+                    }
+                    
+                    if (event.state.tabName) {
+                        params.append('tab', event.state.tabName);
+                        state.tabName = event.state.tabName;
+                    }
+    
+                    history.replaceState(state, '', '?' + params.toString());
                     form.doSearch();
                 }
 
@@ -66,10 +84,11 @@
                     filters.reset();
                     form.showLoadingIndicator();
                     search.performSearch(query, filters.getTerms());
-                    search.refineSearch(filters.getTerms());
+                    // search.refineSearch(filters.getTerms());
                 });
 
                 dispatcher.listenTo(refineSidebar, 'selectOption', function(type, index, query) {
+                    // console.log(search.searchTerm);
                     form.showLoadingIndicator();
                     if (filters.get(type)) {
                         removeFilter(type);
@@ -78,6 +97,7 @@
                         filters.add({type: type, query: query, index: index});
                     }
                     search.refineSearch(filters.getTerms());
+                    // console.log(search.searchTerm);
 
                     // console.log(filters);
                 });
@@ -252,19 +272,18 @@
                         state.q = q;
                         setTimeout(() => {
                             $(form.$searchField).val(q);
-                            form.doSearch();
-                        });
-                    } else {
-                        setTimeout(() => {
-                            form.doSearch();
                         });
                     }
+
                     if (tab) {
                         params.append('tab', tab);
                         state.tabName = tab;
                     }
     
                     history.pushState(state, '', Object.keys(state).length ? ('?' + params.toString()) : '/');
+                    setTimeout(() => {
+                        form.doSearch();
+                    });
                 }
             };
         });

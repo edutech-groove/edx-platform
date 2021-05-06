@@ -38,6 +38,7 @@
             },
 
             refineSearch: function(terms) {
+                // console.log(this.searchTerm);
                 this.reset();
                 this.terms = terms;
                 this.sendQuery(this.buildQuery());
@@ -77,7 +78,7 @@
                 };
                 _.extend(this.searchTerm, this.terms);
 
-                console.log(this.terms);
+                // console.log(this.terms);
                 this.buildSearchQueryUrl();
                 return data;
             },
@@ -105,17 +106,17 @@
                     option.set('selected', false);
                 });
                 if (options.data.page_index === 0) {
-                    if (total === 0) {
-                    // list all courses
-                        this.cachedDiscovery().done(function(cached) {
-                            this[this.searchingType].courseCards.reset(cached.courseCards.toJSON());
-                            this[this.searchingType].facetOptions.reset(cached.facetOptions.toJSON());
-                            this[this.searchingType].set('latestCount', cached.get('latestCount'));
-                            this.trigger('search', originalSearchTerm, total);
-                        });
-                        this.searchTerm = '';
-                        this.terms = {};
-                    } else {
+                    // if (total === 0) {
+                    // // list all courses
+                    //     this.cachedDiscovery().done(function(cached) {
+                    //         this[this.searchingType].courseCards.reset(cached.courseCards.toJSON());
+                    //         this[this.searchingType].facetOptions.reset(cached.facetOptions.toJSON());
+                    //         this[this.searchingType].set('latestCount', cached.get('latestCount'));
+                    //         this.trigger('search', originalSearchTerm, total);
+                    //     });
+                    //     this.searchTerm = '';
+                    //     this.terms = {};
+                    // } else {
                         var _this = this;
                         this[this.searchingType].facetOptions.each(function(option) {
                             _.each(_this.terms, function(terms, facet) {
@@ -133,7 +134,7 @@
                             }, _this);
                         })
                         this.trigger('search', this.searchTerm, total);
-                    }
+                    // }
                 } else {
                     this.page = options.data.page_index;
                     this.trigger('next');
@@ -166,9 +167,10 @@
             },
 
             buildSearchQueryUrl: function() {
-                // console.log(this.searchTerm, this.terms);
+                // console.log(this.searchTerm);
                 var params = new URLSearchParams();
                 var state = {};
+                var hasTermsQuery = false;
                 if (this.searchTerm) {
                     params.append('q', this.searchTerm);
                     state.q = this.searchTerm;
@@ -178,7 +180,7 @@
                     state[key] = [];
                     _this.terms[key].forEach(function (term) {
                         params.append(key, term);
-                        state[key].push(term);
+                        hasTermsQuery = true;
                     });
                 });
 
@@ -189,7 +191,7 @@
                     state.tabName = tab;
                 }
 
-                if (Object.keys(history.state).length) {
+                if (urlParams.get('q') != state.q || hasTermsQuery) {
                     history.pushState(state, '', '?' + params.toString());
                 }
             }
