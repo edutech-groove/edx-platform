@@ -3,8 +3,9 @@
 
     define(['backbone', 'js/courses_programs_search/models/search_state', 'js/courses_programs_search/collections/filters',
         'js/courses_programs_search/views/search_form', 'js/courses_programs_search/views/courses_listing',
-        'js/courses_programs_search/views/filter_bar', 'js/courses_programs_search/views/refine_sidebar'],
-        function(Backbone, SearchState, Filters, SearchForm, CoursesListing, FilterBar, RefineSidebar) {
+        'js/courses_programs_search/views/filter_bar', 'js/courses_programs_search/views/refine_sidebar',
+        'js/courses_programs_search/models/url_search_params'],
+        function(Backbone, SearchState, Filters, SearchForm, CoursesListing, FilterBar, RefineSidebar, UrlSearchParams) {
             return function(meanings, searchQuery, userLanguage, userTimezone) {
                 var dispatcher = _.extend({}, Backbone.Events);
                 var search = new SearchState();
@@ -19,16 +20,17 @@
                 var listing;
                 var courseListingModel = search.discovery;
                 var programListingModel = search.program;
+                var urlSearchParams = new UrlSearchParams();
                 onInit();
                 
                 $('#tab-search a').on('click.search', function(e) {
                     e.preventDefault();
                     var url = this.href;
-                    var tabName = $(this).data('tab-name');
-                    var state = { 'tabName': tabName };
+                    var tab = $(this).data('tab-name');
+                    var state = { 'tab': tab };
                     history.pushState(state, '', url);
-                    listing.model = tabName === 'discovery' ? courseListingModel : programListingModel;
-                    search.searchingType = tabName;
+                    listing.model = tab === 'discovery' ? courseListingModel : programListingModel;
+                    search.searchingType = tab;
                     form.doSearch();
                     activateMenuTab($(this));
                 });
@@ -47,25 +49,22 @@
 
                 window.onpopstate = function (event){
                     // todo
-                    activateMenuTab($('#tab-search [data-tab-name=' + event.state.tabName + ']'));
+                    activateMenuTab($('#tab-search [data-tab-name=' + event.state.tab + ']'));
 
                     // console.log(event.state);
 
-                    var params = new URLSearchParams();
-                    var state = {};
+                    var params = {};
 
                     if (event.state.q) {
-                        params.append('q', event.state.q);
-                        state.q = event.state.q;
+                        params.q = event.state.q;
                         $(form.$searchField).val(event.state.q);
                     }
                     
-                    if (event.state.tabName) {
-                        params.append('tab', event.state.tabName);
-                        state.tabName = event.state.tabName;
+                    if (event.state.tab) {
+                        params.tab = event.state.tab;
                     }
     
-                    history.replaceState(state, '', '?' + params.toString());
+                    history.replaceState(params, '', '?' + urlSearchParams.objectToQuery(params));
                     form.doSearch();
                 }
 
@@ -256,31 +255,29 @@
                 }
 
                 function onViewAllSearchResults() {
+                    form.doSearch();
                     onCloseSearchSuggestions();
                 }
 
                 function onInit() {
-                    var params = new URLSearchParams();
-                    var state = {};
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var tab = urlParams.get('tab');
-                    var q = urlParams.get('q');
+                    var params = {};
+                    var urlParams = urlSearchParams.queryToObject();
+                    var tab = urlParams.tab;
+                    var q = urlParams.q;
                     activateMenuTab($('#tab-search a[href^="' + (tab ? ('?tab=' + tab) : '/' + location.pathname.split("/")[1]) + '"]'));
 
                     if (q) {
-                        params.append('q', q);
-                        state.q = q;
+                        params.q = q;
                         setTimeout(() => {
                             $(form.$searchField).val(q);
                         });
                     }
 
                     if (tab) {
-                        params.append('tab', tab);
-                        state.tabName = tab;
+                        params.tab = tab;
                     }
     
-                    history.pushState(state, '', Object.keys(state).length ? ('?' + params.toString()) : '/');
+                    history.pushState(params, '', Object.keys(params).length ? (urlSearchParams.objectToQuery(params) ? '?' + urlSearchParams.objectToQuery(params) : '') : '/search');
                     setTimeout(() => {
                         form.doSearch();
                     });

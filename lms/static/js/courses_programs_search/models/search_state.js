@@ -3,8 +3,9 @@
         'underscore',
         'backbone',
         'js/courses_programs_search/models/course_discovery',
-        'js/courses_programs_search/collections/filters'
-    ], function(_, Backbone, CourseDiscovery, Filters) {
+        'js/courses_programs_search/collections/filters',
+        'js/courses_programs_search/models/url_search_params'
+    ], function(_, Backbone, CourseDiscovery, Filters, UrlSearchParams) {
         'use strict';
 
 
@@ -16,6 +17,7 @@
             terms: {},
             jqhxr: null,
             searchingType: 'discovery',
+            urlSearchParams: new UrlSearchParams(),
 
             initialize: function() {
                 this.discovery = new CourseDiscovery();
@@ -38,7 +40,7 @@
             },
 
             refineSearch: function(terms) {
-                // console.log(this.searchTerm);
+                // console.log(terms);
                 this.reset();
                 this.terms = terms;
                 this.sendQuery(this.buildQuery());
@@ -76,7 +78,7 @@
                     page_size: this.pageSize,
                     page_index: this.page
                 };
-                _.extend(this.searchTerm, this.terms);
+                _.extend(data, this.terms);
 
                 // console.log(this.terms);
                 this.buildSearchQueryUrl();
@@ -167,32 +169,32 @@
             },
 
             buildSearchQueryUrl: function() {
-                // console.log(this.searchTerm);
-                var params = new URLSearchParams();
-                var state = {};
+
+                // console.log(this.urlSearchParams.queryToObject());
+                // console.log(this.urlSearchParams.objectToQuery(this.urlSearchParams.queryToObject()));
+
+                // console.log(this.terms);
+                var params = {};
                 var hasTermsQuery = false;
-                if (this.searchTerm) {
-                    params.append('q', this.searchTerm);
-                    state.q = this.searchTerm;
-                }
+                params.q = this.searchTerm;
                 var _this = this;
                 Object.keys(this.terms).forEach(function (key) {
-                    state[key] = [];
+                    params[key] = [];
                     _this.terms[key].forEach(function (term) {
-                        params.append(key, term);
+                        params[key].push(term);
                         hasTermsQuery = true;
                     });
                 });
 
-                var urlParams = new URLSearchParams(window.location.search);
-                var tab = urlParams.get('tab');
+                var urlParams = this.urlSearchParams.queryToObject();
+                var tab = urlParams.tab;
                 if (tab) {
-                    params.append('tab', tab);
-                    state.tabName = tab;
+                    params.tab =tab;
                 }
 
-                if (urlParams.get('q') != state.q || hasTermsQuery) {
-                    history.pushState(state, '', '?' + params.toString());
+                if (urlParams.q != params.q || !_.isEqual(params, urlParams)) {
+                    // console.log(this.urlSearchParams.objectToQuery(params));
+                    history.pushState(params, '', this.urlSearchParams.objectToQuery(params) ? '?' + this.urlSearchParams.objectToQuery(params) : '/search');
                 }
             }
         });
