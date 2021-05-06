@@ -41,19 +41,22 @@
                 this.hide();
                 var _this = this;
                 this.collection.models.forEach(function (filter) {
+                    // console.log(filter.attributes.query);
                     if (filter && filter.attributes && filter.attributes.query) {
                         filter.attributes.query.forEach(function (item) {
-                            _this.numOfChipTags ++;
-                            var tempFilter = filter.clone();
-                            tempFilter.attributes.query = item;
-                            var label = new FilterLabel({model: tempFilter});
-                            var labelEl = label.render().el
-
-                            if (_this.numOfChipTags > 3) {
-                                $(labelEl).addClass('extra hidden');
+                            if (item.key != "search_query") {
+                                _this.numOfChipTags ++;
+                                var tempFilter = filter.clone();
+                                tempFilter.attributes.query = item;
+                                var label = new FilterLabel({model: tempFilter});
+                                var labelEl = label.render().el
+    
+                                if (_this.numOfChipTags > 3) {
+                                    $(labelEl).addClass('extra hidden');
+                                }
+    
+                                _this.$ul.append(labelEl);
                             }
-
-                            _this.$ul.append(labelEl);
                         });
                     }
                 });
@@ -78,6 +81,7 @@
             },
 
             resetFilters: function() {
+                // this.collection.reset();
                 this.$ul.empty();
                 this.hide();
                 this.$el.hide();

@@ -40,7 +40,7 @@
         % if course_discovery_enabled:
         <div id="discovery-form" role="search" aria-label="course" class="wrapper-search-context">
           <form class="wrapper-search-input">
-            <input id="discovery-input" class="discovery-input" placeholder="${_('Search courses and programs')}" type="text"/>
+            <input id="discovery-input" class="discovery-input" placeholder="${_('Search courses and programs')}" type="text" autocomplete="off"/>
             <button type="submit" class="button postfix discovery-submit" title="${_('Search')}">
               <div class="btn-content" id="search-text">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18.414" height="18.414" viewBox="0 0 18.414 18.414">
@@ -53,6 +53,16 @@
               </div>
             </button>
           </form>
+          <div class="search-suggestions-wrapper">
+            <div id="search-suggestions" style="display: none;">
+              <div class="search-suggestions-container">
+
+              </div>
+              <div class="view-all">
+                <button class="view-all-results" id="view-all-results-button">View all results</button>
+              </div>
+            </div>
+          </div>
         </div>
         % if course_discovery_enabled:
         <div aria-label="${_('Refine Your Search')}" class="search-facets phone-menu">

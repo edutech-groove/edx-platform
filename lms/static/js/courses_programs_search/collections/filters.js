@@ -6,10 +6,13 @@
             model: Filter,
             getTerms: function() {
                 return this.reduce(function(terms, filter) {
-                    terms[filter.id] = filter.get('query').map(function (query) {
-                        return query.key;
-                    });
-                    return terms;
+                    // console.log(filter.get('query'));
+                        terms[filter.id] = filter.get('query').map(function (query) {
+                            if (query.key != "search_query") {
+                                return query.key;
+                            }
+                        });
+                        return terms;
                 }, {});
             }
         });

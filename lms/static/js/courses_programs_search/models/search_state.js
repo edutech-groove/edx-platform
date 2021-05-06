@@ -20,6 +20,8 @@
             initialize: function() {
                 this.discovery = new CourseDiscovery();
                 this.program = new CourseDiscovery(true);
+                // console.log(this.discovery);
+                // console.log(this.program);
                 this.listenTo(this.discovery, 'sync', this.onSync, this);
                 this.listenTo(this.discovery, 'error', this.onError, this);
                 this.listenTo(this.program, 'sync', this.onSync, this);
@@ -73,7 +75,10 @@
                     page_size: this.pageSize,
                     page_index: this.page
                 };
-                _.extend(data, this.terms);
+                _.extend(this.searchTerm, this.terms);
+
+                console.log(this.terms);
+                this.buildSearchQueryUrl();
                 return data;
             },
 
@@ -93,8 +98,12 @@
             },
 
             onSync: function(collection, response, options) {
+                // console.log(options);
                 var total = this[this.searchingType].get('totalCount');
                 var originalSearchTerm = this.searchTerm;
+                this[this.searchingType].facetOptions.each(function(option) {
+                    option.set('selected', false);
+                });
                 if (options.data.page_index === 0) {
                     if (total === 0) {
                     // list all courses
@@ -109,8 +118,6 @@
                     } else {
                         var _this = this;
                         this[this.searchingType].facetOptions.each(function(option) {
-                            option.set('selected', false);
-
                             _.each(_this.terms, function(terms, facet) {
                                 if (facet !== 'search_query') {
                                         
@@ -142,6 +149,7 @@
                     deferred.resolveWith(this, [this.cached]);
                 } else {
                     this.cached = new CourseDiscovery();
+                    // console.log(this.cached);
                     this.cached.fetch({
                         type: 'POST',
                         data: {
@@ -155,8 +163,36 @@
                     });
                 }
                 return deferred.promise();
-            }
+            },
 
+            buildSearchQueryUrl: function() {
+                // console.log(this.searchTerm, this.terms);
+                var params = new URLSearchParams();
+                var state = {};
+                if (this.searchTerm) {
+                    params.append('q', this.searchTerm);
+                    state.q = this.searchTerm;
+                }
+                var _this = this;
+                Object.keys(this.terms).forEach(function (key) {
+                    state[key] = [];
+                    _this.terms[key].forEach(function (term) {
+                        params.append(key, term);
+                        state[key].push(term);
+                    });
+                });
+
+                var urlParams = new URLSearchParams(window.location.search);
+                var tab = urlParams.get('tab');
+                if (tab) {
+                    params.append('tab', tab);
+                    state.tabName = tab;
+                }
+
+                if (Object.keys(history.state).length) {
+                    history.pushState(state, '', '?' + params.toString());
+                }
+            }
         });
     });
 }(define || RequireJS.define));
