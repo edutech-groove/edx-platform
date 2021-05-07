@@ -2,7 +2,7 @@
     <%- displayName %>
 </h3>
 <select class="text-select" data-facet="<%- name %>" class="facet-list collapse">
-    <option data-facet="" data-count="" data-value="" data-text="" value="">All</option>
+    <option data-facet=“program_type” data-count=“1” data-value=“All” data-text=“All” value=“All”>All</option>
     <%= HtmlUtils.ensureHtml(optionsHtml) %>
 </select>
 <% if (listIsHuge) { %>

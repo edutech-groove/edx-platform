@@ -24,9 +24,10 @@
                     var url = this.href;
                     var tabName = $(this).data('tab-name');
                     var state = { 'tabName': tabName };
-                    history.pushState(state, '', url);
+                    // history.pushState(state, '', url);
                     listing.model = tabName === 'discovery' ? courseListingModel : programListingModel;
                     search.searchingType = tabName;
+                    refineSidebar.collection = tabName === 'discovery' ? search.discovery.facetOptions : search.program.facetOptions;
                     search.page = 0;
                     form.doSearch('');
                 });

@@ -100,7 +100,7 @@
                         });
                         this.searchTerm = '';
                         this.terms = {};
-                        this.trigger('updatepaging', total)
+                        this.trigger('updatepaging', total);
                     } else {
                         _.each(this.terms, function(term, facet) {
                             if (facet !== 'search_query') {

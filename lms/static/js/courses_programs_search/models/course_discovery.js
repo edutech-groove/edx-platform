@@ -31,10 +31,11 @@
 
             parse: function(response) {
                 if (this.isPrograms){
-                    var courses = response || [];
+                    var courses = response.results || [];
+                    var facets = response.facets || {};
                     this.courseCards.add(courses);
                     this.set({
-                        totalCount: response[0].count,
+                        totalCount: response.results[0].count,
                         latestCount: courses.length
                     });
                 }
