@@ -14,13 +14,14 @@
                 var form = new SearchForm();
                 var filterBar = new FilterBar({collection: filters});
                 var refineSidebar = new RefineSidebar({
-                    collection: search.discovery.facetOptions,
+                    collection: search.records.facetOptions,
                     meanings: meanings
                 });
                 var listing;
-                var courseListingModel = search.discovery;
-                var programListingModel = search.program;
+                var courseListingModel = search.records;
+                // var programListingModel = search.programs;
                 var urlSearchParams = new UrlSearchParams();
+                var searchingType;
                 onInit();
                 
                 $('#tab-search a').on('click.search', function(e) {
@@ -29,10 +30,10 @@
                     var tab = $(this).data('tab-name');
                     var state = { 'tab': tab };
                     history.pushState(state, '', url);
-                    listing.model = tab === 'discovery' ? courseListingModel : programListingModel;
+                    // listing.model = tab === 'courses' ? courseListingModel : programListingModel;
                     search.searchingType = tab;
+                    activateTab($(this), tab);
                     form.doSearch();
-                    activateMenuTab($(this));
                 });
 
                 $('#pagination').pagination({
@@ -49,9 +50,7 @@
 
                 window.onpopstate = function (event){
                     // todo
-                    activateMenuTab($('#tab-search [data-tab-name=' + event.state.tab + ']'));
-
-                    // console.log(event.state);
+                    activateTab($('#tab-search [data-tab-name=' + event.state.tab + ']'), event.state.tab);
 
                     var params = {};
 
@@ -73,10 +72,10 @@
                     userTimezone: userTimezone
                 };
 
-                programListingModel.userPreferences = {
-                    userLanguage: userLanguage,
-                    userTimezone: userTimezone
-                };
+                // programListingModel.userPreferences = {
+                //     userLanguage: userLanguage,
+                //     userTimezone: userTimezone
+                // };
 
                 listing = new CoursesListing({model: courseListingModel});
                 dispatcher.listenTo(form, 'search', function(query) {
@@ -87,7 +86,6 @@
                 });
 
                 dispatcher.listenTo(refineSidebar, 'selectOption', function(type, index, query) {
-                    // console.log(search.searchTerm);
                     form.showLoadingIndicator();
                     if (filters.get(type)) {
                         removeFilter(type);
@@ -96,9 +94,6 @@
                         filters.add({type: type, query: query, index: index});
                     }
                     search.refineSearch(filters.getTerms());
-                    // console.log(search.searchTerm);
-
-                    // console.log(filters);
                 });
 
                 dispatcher.listenTo(filterBar, 'clearFilter', removeFilter);
@@ -127,12 +122,16 @@
                     } else {
                         // form.showNotFoundMessage(query);
                         // filters.reset();
-                        form.hideLoadingIndicator();
+                        // form.hideLoadingIndicator();
                     }
                     form.hideLoadingIndicator();
-                    listing.render();
                     refineSidebar.render();
-                    $('.page-title .title #records-count').text(listing.model.datafake.length + ' results');
+                    listing.render(searchingType);
+                    if (searchingType === 'programs') {
+                        $('#programs-list .page-title .title .records-count').text(total + ' results');
+                    } else if (searchingType === 'courses') {
+                        $('#courses-list .page-title .title .records-count').text(total + ' results');
+                    }
                 });
 
                 dispatcher.listenTo(search, 'error', function() {
@@ -172,10 +171,11 @@
                     return '"' + string + '"';
                 }
 
-                function activateMenuTab(nav) {
+                function activateTab(nav, tab) {
                     $('#tab-search > ul > li').removeClass('active');
                     nav.parentsUntil('ul').addClass('active');
-                    $('.page-title .title #main-title').text(nav.text());
+                    searchingType = tab;
+                    search.reInitRecords(tab);
                 }
 
 
@@ -264,7 +264,7 @@
                     var urlParams = urlSearchParams.queryToObject();
                     var tab = urlParams.tab;
                     var q = urlParams.q;
-                    activateMenuTab($('#tab-search a[href^="' + (tab ? ('?tab=' + tab) : '/' + location.pathname.split("/")[1]) + '"]'));
+                    activateTab($('#tab-search a[href^="' + (tab ? ('?tab=' + tab) : '/' + location.pathname.split("/")[1]) + '"]'), tab);
 
                     if (q) {
                         params.q = q;

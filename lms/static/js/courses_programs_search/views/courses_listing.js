@@ -10,16 +10,21 @@
 
         return Backbone.View.extend({
 
-            el: 'div.courses',
+            el: '.search-content',
             $window: $(window),
             $document: $(document),
 
             initialize: function() {
-                this.$list = this.$el.find('.courses-listing');
                 this.attachScrollHandler();
             },
 
-            render: function() {
+            render: function(type) {
+                if (type === 'programs') {
+                    this.$list = this.$el.find('#programs-list .courses-listing');
+                } else if (type === 'courses') {
+                    this.$list = this.$el.find('#courses-list .courses-listing');
+                }
+                console.log(this.$list);
                 this.$list.empty();
                 this.renderItems();
                 return this;

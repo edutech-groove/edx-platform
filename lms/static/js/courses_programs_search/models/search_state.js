@@ -16,18 +16,14 @@
             searchTerm: '',
             terms: {},
             jqhxr: null,
-            searchingType: 'discovery',
+            searchingType: null,
             urlSearchParams: new UrlSearchParams(),
 
             initialize: function() {
-                this.discovery = new CourseDiscovery();
-                this.program = new CourseDiscovery(true);
-                // console.log(this.discovery);
-                // console.log(this.program);
-                this.listenTo(this.discovery, 'sync', this.onSync, this);
-                this.listenTo(this.discovery, 'error', this.onError, this);
-                this.listenTo(this.program, 'sync', this.onSync, this);
-                this.listenTo(this.program, 'error', this.onError, this);
+                this.searchingType = this.urlSearchParams.queryToObject().tab || 'all';
+                this.records = new CourseDiscovery(this.searchingType);
+                this.listenTo(this.records, 'sync', this.onSync, this);
+                this.listenTo(this.records, 'error', this.onError, this);
             },
 
             performSearch: function(searchTerm, otherTerms) {
@@ -40,10 +36,15 @@
             },
 
             refineSearch: function(terms) {
-                // console.log(terms);
                 this.reset();
                 this.terms = terms;
                 this.sendQuery(this.buildQuery());
+            },
+
+            reInitRecords: function(searchingType) {
+                this.searchingType = searchingType;
+                this.records.update(searchingType);
+                // this.records = new CourseDiscovery(this.searchingType);
             },
 
             loadNextPage: function() {
@@ -55,16 +56,16 @@
         // private
 
             hasNextPage: function() {
-                if (this[this.searchingType]) {
-                    var total = this[this.searchingType].get('totalCount');
+                if (this.records) {
+                    var total = this.records.get('totalCount');
                     return total - ((this.page + 1) * this.pageSize) > 0;
                 }
             },
 
             sendQuery: function(data) {
-                if (this[this.searchingType]) {
+                if (this.records) {
                     this.jqhxr && this.jqhxr.abort();
-                    this.jqhxr = this[this.searchingType].fetch({
+                    this.jqhxr = this.records.fetch({
                         type: 'POST',
                         data: data
                     });
@@ -80,14 +81,13 @@
                 };
                 _.extend(data, this.terms);
 
-                // console.log(this.terms);
                 this.buildSearchQueryUrl();
                 return data;
             },
 
             reset: function() {
-                // if (this[this.searchingType]) {
-                //     this[this.searchingType].reset();
+                // if (this.records) {
+                //     this.records.reset();
                 // }
                 // this.page = 0;
                 this.errorMessage = '';
@@ -101,26 +101,25 @@
             },
 
             onSync: function(collection, response, options) {
-                // console.log(options);
-                var total = this[this.searchingType].get('totalCount');
+                var total = this.records.get(this.searchingType).totalCount;
                 var originalSearchTerm = this.searchTerm;
-                this[this.searchingType].facetOptions.each(function(option) {
+                this.records.facetOptions.each(function(option) {
                     option.set('selected', false);
                 });
                 if (options.data.page_index === 0) {
                     // if (total === 0) {
                     // // list all courses
                     //     this.cachedDiscovery().done(function(cached) {
-                    //         this[this.searchingType].courseCards.reset(cached.courseCards.toJSON());
-                    //         this[this.searchingType].facetOptions.reset(cached.facetOptions.toJSON());
-                    //         this[this.searchingType].set('latestCount', cached.get('latestCount'));
+                    //         this.records.courseCards.reset(cached.courseCards.toJSON());
+                    //         this.records.facetOptions.reset(cached.facetOptions.toJSON());
+                    //         this.records.set('latestCount', cached.get('latestCount'));
                     //         this.trigger('search', originalSearchTerm, total);
                     //     });
                     //     this.searchTerm = '';
                     //     this.terms = {};
                     // } else {
                         var _this = this;
-                        this[this.searchingType].facetOptions.each(function(option) {
+                        this.records.facetOptions.each(function(option) {
                             _.each(_this.terms, function(terms, facet) {
                                 if (facet !== 'search_query') {
                                         
@@ -152,7 +151,6 @@
                     deferred.resolveWith(this, [this.cached]);
                 } else {
                     this.cached = new CourseDiscovery();
-                    // console.log(this.cached);
                     this.cached.fetch({
                         type: 'POST',
                         data: {
@@ -169,11 +167,6 @@
             },
 
             buildSearchQueryUrl: function() {
-
-                // console.log(this.urlSearchParams.queryToObject());
-                // console.log(this.urlSearchParams.objectToQuery(this.urlSearchParams.queryToObject()));
-
-                // console.log(this.terms);
                 var params = {};
                 var hasTermsQuery = false;
                 params.q = this.searchTerm;
@@ -191,9 +184,11 @@
                 if (tab) {
                     params.tab =tab;
                 }
+                if (!urlParams.q) {
+                    urlParams.q = "";
+                }
 
                 if (urlParams.q != params.q || !_.isEqual(params, urlParams)) {
-                    // console.log(this.urlSearchParams.objectToQuery(params));
                     history.pushState(params, '', this.urlSearchParams.objectToQuery(params) ? '?' + this.urlSearchParams.objectToQuery(params) : '/search');
                 }
             }

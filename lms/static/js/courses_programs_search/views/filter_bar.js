@@ -41,7 +41,6 @@
                 this.hide();
                 var _this = this;
                 this.collection.models.forEach(function (filter) {
-                    // console.log(filter.attributes.query);
                     if (filter && filter.attributes && filter.attributes.query) {
                         filter.attributes.query.forEach(function (item) {
                             if (item.key != "search_query") {
@@ -52,7 +51,11 @@
                                 var labelEl = label.render().el
     
                                 if (_this.numOfChipTags > 3) {
-                                    $(labelEl).addClass('extra hidden');
+                                    $(labelEl).addClass('extra');
+                                    
+                                    if (!_this.isViewMoreFilter) {
+                                        $(labelEl).addClass('hidden');
+                                    }
                                 }
     
                                 _this.$ul.append(labelEl);
@@ -65,7 +68,11 @@
                     this.show();
                     this.$el.show();
                     if (this.numOfChipTags > 3) {
-                        this.$el.find('#toggle-view-filters').show().text('+' + (this.numOfChipTags - 3));
+                        if (this.isViewMoreFilter) {
+                            this.$el.find('#toggle-view-filters').show().text('View less');
+                        } else {
+                            this.$el.find('#toggle-view-filters').show().text('+' + (this.numOfChipTags - 3));
+                        }
                     } else {
                         this.$el.find('#toggle-view-filters').hide().empty();
                     }

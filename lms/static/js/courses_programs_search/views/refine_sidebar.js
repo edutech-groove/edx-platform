@@ -47,6 +47,7 @@
                     index: index,
                     displayName: this.facetName(facetKey),
                     optionsHtml: this.renderOptions(options),
+                    hasValue: options.some(function(opt) { return opt.attributes.selected; }),
                     listIsHuge: (options.length > 9)
                 });
             },
