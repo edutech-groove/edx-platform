@@ -19,31 +19,51 @@
             },
 
             render: function(type) {
-                if (type === 'programs') {
-                    this.$list = this.$el.find('#programs-list .courses-listing');
-                } else if (type === 'courses') {
-                    this.$list = this.$el.find('#courses-list .courses-listing');
+                // console.log(type);
+                this.searchingType = type;
+
+                if (type === 'all') {
+                    this.$list = {
+                        courses: this.$el.find('#programs-list .courses-listing'),
+                        programs: this.$el.find('#courses-list .courses-listing')
+                    }
+                    this.$el.find('.search-content-container').show();
+                } else {
+                    this.$list = {
+                        [type]: this.$el.find('#' + type + '-list .courses-listing')
+                    };
+                    this.$el.find('.search-content-container').hide();
+                    this.$el.find('#' + type + '-list').show();
                 }
-                console.log(this.$list);
-                this.$list.empty();
-                this.renderItems();
+
+                this.preRenderItems();
                 return this;
             },
 
             renderNext: function() {
-                this.renderItems();
+                this.preRenderItems();
                 this.isLoading = false;
             },
 
-            renderItems: function() {
+            preRenderItems: function() {
+                if (this.searchingType === 'all') {
+                    this.renderItems('courses');
+                    this.renderItems('programs');
+                } else {
+                    this.renderItems(this.searchingType);
+                }
+            },
+
+            renderItems: function(type) {
                 /* eslint no-param-reassign: [2, { "props": true }] */
+                this.$list[type].empty();
                 var latest = this.model.latest();
-                var items = latest.map(function(result) {
+                var items = latest[type].map(function(result) {
                     result.userPreferences = this.model.userPreferences;
                     var item = new CourseCardView({model: result});
                     return item.render().el;
                 }, this);
-                this.$list.append(items);
+                this.$list[type].append(items);
                 /* eslint no-param-reassign: [2, { "props": false }] */
             },
 

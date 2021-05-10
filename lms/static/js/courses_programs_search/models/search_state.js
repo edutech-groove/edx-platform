@@ -42,7 +42,7 @@
             },
 
             reInitRecords: function(searchingType) {
-                this.searchingType = searchingType;
+                this.searchingType = searchingType || 'all';
                 this.records.update(searchingType);
                 // this.records = new CourseDiscovery(this.searchingType);
             },
@@ -101,8 +101,19 @@
             },
 
             onSync: function(collection, response, options) {
-                var total = this.records.get(this.searchingType).totalCount;
-                var originalSearchTerm = this.searchTerm;
+                var total;
+                console.log(this.searchingType);
+                if (this.searchingType === 'all') {
+                    total = {
+                        courses: this.records.get('courses').totalCount,
+                        programs: this.records.get('programs').totalCount
+                    };
+                } else {
+                    total = {
+                        [this.searchingType]: this.records.get(this.searchingType).totalCount
+                    };
+                }
+                // var originalSearchTerm = this.searchTerm;
                 this.records.facetOptions.each(function(option) {
                     option.set('selected', false);
                 });
@@ -133,7 +144,7 @@
                                         });
                                 }
                             }, _this);
-                        })
+                        });
                         this.trigger('search', this.searchTerm, total);
                     // }
                 } else {

@@ -36,18 +36,6 @@
                     form.doSearch();
                 });
 
-                $('#pagination').pagination({
-                    items: 100,
-                    itemsOnPage: 10,
-                    onPageClick(pageNumber, event){
-                        // alert(pageNumber);
-                        search.page = pageNumber - 1;
-                        form.doSearch();
-                    },
-                    prevText: '<svg width="5" height="9"><use xlink:href="#paging-prev-icon"></use></svg>',
-                    nextText: '<svg width="5" height="9"><use xlink:href="#paging-next-icon"></use></svg>'
-                });
-
                 window.onpopstate = function (event){
                     // todo
                     activateTab($('#tab-search [data-tab-name=' + event.state.tab + ']'), event.state.tab);
@@ -111,26 +99,44 @@
                 });
 
                 dispatcher.listenTo(search, 'search', function(query, total) {
-                    if (total > 0) {
-                        form.showFoundMessage(total);
-                        if (query) {
-                            // filters.add(
-                            //     {type: 'search_query', query: [{key: 'search_query', val: query}], name: quote(query)},
-                            //     {merge: true}
-                            // );
-                        }
-                    } else {
-                        // form.showNotFoundMessage(query);
-                        // filters.reset();
-                        // form.hideLoadingIndicator();
-                    }
+                    // console.log(total);
+                    // if (total > 0) {
+                    //     form.showFoundMessage(total);
+                    //     if (query) {
+                    //         // filters.add(
+                    //         //     {type: 'search_query', query: [{key: 'search_query', val: query}], name: quote(query)},
+                    //         //     {merge: true}
+                    //         // );
+                    //     }
+                    // } else {
+                    //     // form.showNotFoundMessage(query);
+                    //     // filters.reset();
+                    //     // form.hideLoadingIndicator();
+                    // }
                     form.hideLoadingIndicator();
                     refineSidebar.render();
                     listing.render(searchingType);
-                    if (searchingType === 'programs') {
-                        $('#programs-list .page-title .title .records-count').text(total + ' results');
-                    } else if (searchingType === 'courses') {
-                        $('#courses-list .page-title .title .records-count').text(total + ' results');
+                    $('.search-content-container .page-title .right-side .pagination').empty();
+                    $('.search-content-container .page-title .right-side .navigation').empty();
+                    if (searchingType === 'all') {
+                        $('#courses-list .page-title .left-side .records-count').text(total.courses + ' results');
+                        $('#programs-list .page-title .left-side .records-count').text(total.programs + ' results');
+                        $('#courses-list .page-title .right-side .navigation').text('Show (' + total.courses + ')');
+                        $('#programs-list .page-title .right-side .navigation').text('Show (' + total.programs + ')');
+                    } else {
+                        $('#' + searchingType + '-list .page-title .left-side .records-count').text(total[searchingType] + ' results');
+
+                        $('.search-content-container .page-title .right-side .pagination').pagination({
+                            items: 100,
+                            itemsOnPage: 10,
+                            onPageClick(pageNumber, event){
+                                // alert(pageNumber);
+                                search.page = pageNumber - 1;
+                                form.doSearch();
+                            },
+                            prevText: '<svg width="5" height="9"><use xlink:href="#paging-prev-icon"></use></svg>',
+                            nextText: '<svg width="5" height="9"><use xlink:href="#paging-next-icon"></use></svg>'
+                        });
                     }
                 });
 
@@ -174,10 +180,10 @@
                 function activateTab(nav, tab) {
                     $('#tab-search > ul > li').removeClass('active');
                     nav.parentsUntil('ul').addClass('active');
-                    searchingType = tab;
+                    searchingType = tab || 'all';
+                    // console.log(searchingType);
                     search.reInitRecords(tab);
                 }
-
 
                 var projects = [
                     {

@@ -41,6 +41,7 @@
                     this.url = '/search/course_discovery/';
                 } else if (this.type === 'all') {
                     this.url = '/search/course_discovery/';
+                    // console.log(this.type);
                 }
             },
 
@@ -104,11 +105,15 @@
             },
 
             latest: function() {
-                if (['all', 'programs'].includes(this.type)) {
-                    return this.programs.courseCards.last(this.get('programs').latestCount);
-                }
-                if (['all', 'courses'].includes(this.type)) {
-                    return this.courses.courseCards.last(this.get('courses').latestCount);
+                if (this.type === 'all') {
+                    return {
+                        courses: this.courses.courseCards.last(this.get('courses').latestCount),
+                        programs: this.programs.courseCards.last(this.get('programs').latestCount)
+                    }
+                } else {
+                    return {
+                        [this.type]: this.programs.courseCards.last(this.get(this.type).latestCount)
+                    };
                 }
             }
 
