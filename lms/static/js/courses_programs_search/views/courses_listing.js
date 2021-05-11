@@ -19,7 +19,6 @@
             },
 
             render: function(type) {
-                // console.log(type);
                 this.searchingType = type;
 
                 if (type === 'all') {
@@ -60,7 +59,6 @@
                 /* eslint no-param-reassign: [2, { "props": true }] */
                 this.$list[type].empty();
                 var latest = this.model.latest();
-                // console.log(latest);
                 var items = latest[type].map(function(result) {
                     result.userPreferences = this.model.userPreferences;
                     var item = new CourseCardView({model: result});

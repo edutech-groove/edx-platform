@@ -44,7 +44,6 @@
             reInitRecords: function(searchingType) {
                 this.searchingType = searchingType || 'all';
                 this.records.update(searchingType);
-                // this.records = new CourseDiscovery(this.searchingType);
             },
 
             loadNextPage: function() {
@@ -86,10 +85,6 @@
             },
 
             reset: function() {
-                // if (this.records) {
-                //     this.records.reset();
-                // }
-                // this.page = 0;
                 this.errorMessage = '';
             },
 
@@ -102,7 +97,6 @@
 
             onSync: function(collection, response, options) {
                 var total;
-                console.log(this.searchingType);
                 if (this.searchingType === 'all') {
                     total = {
                         courses: this.records.get('courses').totalCount,
@@ -113,21 +107,11 @@
                         [this.searchingType]: this.records.get(this.searchingType).totalCount
                     };
                 }
-                // var originalSearchTerm = this.searchTerm;
                 this.records.facetOptions.each(function(option) {
                     option.set('selected', false);
                 });
                 if (options.data.page_index === 0) {
                     if (total === 0) {
-                    // // list all courses
-                    //     this.cachedDiscovery().done(function(cached) {
-                    //         this.records.courseCards.reset(cached.courseCards.toJSON());
-                    //         this.records.facetOptions.reset(cached.facetOptions.toJSON());
-                    //         this.records.set('latestCount', cached.get('latestCount'));
-                    //         this.trigger('search', originalSearchTerm, total);
-                    //     });
-                    //     this.searchTerm = '';
-                    //     this.terms = {};
                         this.trigger('updatepaging', total);
                     } else {
                         var _this = this;

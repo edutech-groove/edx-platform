@@ -88,7 +88,6 @@
             },
 
             resetFilters: function() {
-                // this.collection.reset();
                 this.$ul.empty();
                 this.hide();
                 this.$el.hide();

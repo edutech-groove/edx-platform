@@ -7,8 +7,6 @@
     ], function(_, Backbone, CourseCard, FacetOption) {
         'use strict';
 
-        //url: '/search/course_discovery/'
-
         return Backbone.Model.extend({
             
             url: null,
@@ -40,13 +38,11 @@
                     this.url = '/search/course_discovery/';
                 } else if (this.type === 'all') {
                     this.url = '/search/course_discovery/';
-                    // console.log(this.type);
                 }
             },
 
             parse: function(response) {
                 var courses = response.results || [];
-                // courses = this.datafake;
                 var facets = response.facets || {};
 
                 this.reset();
@@ -70,26 +66,8 @@
                 }
 
                 this.facetOptions.reset();
+
                 var _this = this;
-                // if (this.isPrograms){
-                //     var courses = response.results || [];
-                //     var facets = response.facets || {};
-                //     this.courseCards.add(courses);
-                //     this.set({
-                //         totalCount: response.results[0].count,
-                //         latestCount: courses.length
-                //     });
-                // }
-                // else {
-                //     var courses = response.results || [];
-                //     var facets = response.facets || {};
-                //     this.courseCards.add(_.pluck(courses, 'data'));
-                //     this.set({
-                //         totalCount: response.total,
-                //         latestCount: courses.length
-                //     });
-                // }
-                // var options = this.facetOptions;
                 _(facets).each(function(obj, key) {
                     _(obj.terms).each(function(count, term) {
                         _this.facetOptions.add({

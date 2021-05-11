@@ -19,7 +19,6 @@
                 });
                 var listing;
                 var courseListingModel = search.records;
-                // var programListingModel = search.programs;
                 var urlSearchParams = new UrlSearchParams();
                 var searchingType;
                 onInit();
@@ -30,9 +29,7 @@
                     var tab = $(this).data('tab-name');
                     var state = { 'tab': tab };
                     history.pushState(state, '', url);
-                    // listing.model = tab === 'courses' ? courseListingModel : programListingModel;
                     search.searchingType = tab;
-                    // refineSidebar.collection = tab === 'courses' ? search.courses.facetOptions : search.programs.facetOptions;
                     search.page = 0;
                     activateTab($(this), tab);
                     form.doSearch();
@@ -63,17 +60,11 @@
                     userTimezone: userTimezone
                 };
 
-                // programListingModel.userPreferences = {
-                //     userLanguage: userLanguage,
-                //     userTimezone: userTimezone
-                // };
-
                 listing = new CoursesListing({model: courseListingModel});
                 dispatcher.listenTo(form, 'search', function(query) {
                     filters.reset();
                     form.showLoadingIndicator();
                     search.performSearch(query, filters.getTerms());
-                    // search.refineSearch(filters.getTerms());
                 });
 
                 dispatcher.listenTo(refineSidebar, 'selectOption', function(type, index, query) {
@@ -106,7 +97,6 @@
                         items: total,
                         itemsOnPage: 1,
                         onPageClick(pageNumber, event){
-                            // alert(pageNumber);
                             search.page = pageNumber - 1;
                             form.doSearch();
                         }
@@ -114,20 +104,6 @@
                 });
 
                 dispatcher.listenTo(search, 'search', function(query, total) {
-                    // console.log(total);
-                    // if (total > 0) {
-                    //     form.showFoundMessage(total);
-                    //     if (query) {
-                    //         // filters.add(
-                    //         //     {type: 'search_query', query: [{key: 'search_query', val: query}], name: quote(query)},
-                    //         //     {merge: true}
-                    //         // );
-                    //     }
-                    // } else {
-                    //     // form.showNotFoundMessage(query);
-                    //     // filters.reset();
-                    //     // form.hideLoadingIndicator();
-                    // }
                     form.hideLoadingIndicator();
                     refineSidebar.render();
                     listing.render(searchingType);
@@ -146,7 +122,6 @@
                             items: count,
                             itemsOnPage: 1,
                             onPageClick(pageNumber, event){
-                                // alert(pageNumber);
                                 search.page = pageNumber - 1;
                                 form.doSearch();
                             },
@@ -161,9 +136,6 @@
                     form.showErrorMessage(search.errorMessage);
                     form.hideLoadingIndicator();
                 });
-
-                // kick off search on page refresh
-                // form.doSearch(searchQuery);
 
                 function removeFilter(type, value = null) {
                     form.showLoadingIndicator();
@@ -198,7 +170,6 @@
                     $('#tab-search > ul > li').removeClass('active');
                     nav.parentsUntil('ul').addClass('active');
                     searchingType = tab || 'all';
-                    // console.log(searchingType);
                     search.reInitRecords(tab);
                 }
 

@@ -7,7 +7,6 @@
             defaults: {
                 type: 'search_query',
                 query: {},
-                // name: ''
             }
         });
     });
