@@ -3,16 +3,15 @@
         'underscore',
         'backbone',
         'js/courses_programs_search/models/course_discovery',
+        // 'js/courses_programs_search/models/auto_suggestions',
         'js/courses_programs_search/collections/filters',
         'js/courses_programs_search/models/url_search_params'
     ], function(_, Backbone, CourseDiscovery, Filters, UrlSearchParams) {
         'use strict';
 
-
         return Backbone.Model.extend({
 
             page: 0,
-            pageSize: 1,
             searchTerm: '',
             terms: {},
             jqhxr: null,
@@ -22,16 +21,18 @@
             initialize: function() {
                 this.searchingType = this.urlSearchParams.queryToObject().tab || 'all';
                 this.records = new CourseDiscovery(this.searchingType);
+                // this.autoSuggestions = new AutoSuggestions();
                 this.listenTo(this.records, 'sync', this.onSync, this);
                 this.listenTo(this.records, 'error', this.onError, this);
             },
 
-            performSearch: function(searchTerm, otherTerms) {
+            performSearch: function(searchTerm, otherTerms, containerType) {
                 this.reset();
                 this.searchTerm = searchTerm;
                 if (otherTerms) {
                     this.terms = otherTerms;
                 }
+                this.containerType = containerType;
                 this.sendQuery(this.buildQuery());
             },
 
@@ -46,36 +47,40 @@
                 this.records.update(searchingType);
             },
 
-            loadNextPage: function() {
-                if (this.hasNextPage()) {
-                    this.sendQuery(this.buildQuery(this.page + 1));
-                }
-            },
-
         // private
-
-            hasNextPage: function() {
-                if (this.records) {
-                    var total = this.records.get('totalCount');
-                    return total - ((this.page + 1) * this.pageSize) > 0;
-                }
-            },
 
             sendQuery: function(data) {
                 if (this.records) {
-                    this.jqhxr && this.jqhxr.abort();
-                    this.jqhxr = this.records.fetch({
+                    var option = {
                         type: 'POST',
                         data: data
-                    });
+                    };
+                    if (this.urlSearchParams.queryToObject().tab) {
+                        this.jqhxr && this.jqhxr.abort();
+                    }
+                    else {
+                        option.async = false;
+                    }
+                    this.jqhxr = this.records.fetch(option);
                     return this.jqhxr;
                 }
             },
 
+            // getAutoSuggestions: function(data) {
+            //     if (this.records) {
+            //         this.jqhxr && this.jqhxr.abort();
+            //         this.jqhxr = this.autoSuggestions.fetch({
+            //             type: 'POST',
+            //             data: data
+            //         });
+            //         return this.jqhxr;
+            //     }
+            // },
+
             buildQuery: function() {
                 var data = {
                     search_string: this.searchTerm,
-                    page_size: this.pageSize,
+                    page_size: this.getPageSize(),
                     page_index: this.page
                 };
                 _.extend(data, this.terms);
@@ -130,7 +135,7 @@
                     if (total === 0) {
                         this.trigger('updatepaging', total);
                     } else {
-                        this.trigger('search', this.searchTerm, total);
+                        this.trigger('search', this.searchTerm, total, this.containerType);
                     }
                 } else {
                     this.page = options.data.page_index;
@@ -151,7 +156,7 @@
                         type: 'POST',
                         data: {
                             search_string: '',
-                            page_size: this.pageSize,
+                            page_size: this.getPageSize(),
                             page_index: 0
                         },
                         success: function(model, response, options) {
@@ -187,6 +192,10 @@
                 if (urlParams.q != params.q || !_.isEqual(params, urlParams)) {
                     history.pushState(params, '', this.urlSearchParams.objectToQuery(params) ? '?' + this.urlSearchParams.objectToQuery(params) : '/search');
                 }
+            },
+
+            getPageSize: function() {
+                return this.searchingType === 'programs' ? 4 : 10;
             }
         });
     });

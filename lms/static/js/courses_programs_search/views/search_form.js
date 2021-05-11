@@ -22,13 +22,13 @@
                 this.doSearch();
             },
 
-            doSearch: function(term, resetFilters = true) {
+            doSearch: function(term, resetFilters = true, searchingType = null) {
                 if (term !== undefined) {
                     this.$searchField.val(term);
                 } else {
                     term = this.$searchField.val();
                 }
-                this.trigger('search', $.trim(term), resetFilters);
+                this.trigger('search', $.trim(term), resetFilters, searchingType);
             },
 
             clearSearch: function() {
