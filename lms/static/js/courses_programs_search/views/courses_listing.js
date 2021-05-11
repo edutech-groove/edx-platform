@@ -35,8 +35,6 @@
                     this.$el.find('#' + type + '-list').show();
                 }
 
-                var count = this.model.totalcount();
-                $('#page-count').text(count);
                 this.preRenderItems();
                 return this;
             },

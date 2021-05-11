@@ -107,29 +107,29 @@
                         [this.searchingType]: this.records.get(this.searchingType).totalCount
                     };
                 }
+                
+                var _this = this;
                 this.records.facetOptions.each(function(option) {
                     option.set('selected', false);
+                    _.each(_this.terms, function(terms, facet) {
+                        if (facet !== 'search_query') {
+                                
+                                terms.forEach(function (term) {
+                                    if (option.attributes.facet == facet) {
+
+                                        if (option.attributes.term == term) {
+                                            option.set('selected', true);
+                                        }
+                                    }
+                                });
+                        }
+                    }, _this);
                 });
+
                 if (options.data.page_index === 0) {
                     if (total === 0) {
                         this.trigger('updatepaging', total);
                     } else {
-                        var _this = this;
-                        this.records.facetOptions.each(function(option) {
-                            _.each(_this.terms, function(terms, facet) {
-                                if (facet !== 'search_query') {
-                                        
-                                        terms.forEach(function (term) {
-                                            if (option.attributes.facet == facet) {
-
-                                                if (option.attributes.term == term) {
-                                                    option.set('selected', true);
-                                                }
-                                            }
-                                        });
-                                }
-                            }, _this);
-                        });
                         this.trigger('search', this.searchTerm, total);
                     }
                 } else {

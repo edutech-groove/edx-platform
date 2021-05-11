@@ -61,8 +61,10 @@
                 };
 
                 listing = new CoursesListing({model: courseListingModel});
-                dispatcher.listenTo(form, 'search', function(query) {
-                    filters.reset();
+                dispatcher.listenTo(form, 'search', function(query, resetFilters) {
+                    if (resetFilters) {
+                        filters.reset();
+                    }
                     form.showLoadingIndicator();
                     search.performSearch(query, filters.getTerms());
                 });
@@ -89,16 +91,20 @@
                 });
 
                 dispatcher.listenTo(search, 'next', function() {
+                    form.hideLoadingIndicator();
+                    refineSidebar.render();
                     listing.renderNext();
                 });
 
                 dispatcher.listenTo(search, 'updatepaging', function(total) {
+                    console.log(total);
                     $('#demo').pagination({
                         items: total,
                         itemsOnPage: 1,
                         onPageClick(pageNumber, event){
+                            event.preventDefault();
                             search.page = pageNumber - 1;
-                            form.doSearch();
+                            form.doSearch(null, false);
                         }
                     });
                 });
@@ -117,13 +123,13 @@
                     } else {
                         $('#' + searchingType + '-list .page-title .left-side .records-count').text(total[searchingType] + ' results');
 
-                        var count = parseInt($('#page-count').text());
                         $('.search-content-container .page-title .right-side .pagination').pagination({
-                            items: count,
+                            items: total[searchingType],
                             itemsOnPage: 1,
                             onPageClick(pageNumber, event){
+                                event.preventDefault();
                                 search.page = pageNumber - 1;
-                                form.doSearch();
+                                form.doSearch(null, false);
                             },
                             prevText: '<svg width="5" height="9"><use xlink:href="#paging-prev-icon"></use></svg>',
                             nextText: '<svg width="5" height="9"><use xlink:href="#paging-next-icon"></use></svg>'
