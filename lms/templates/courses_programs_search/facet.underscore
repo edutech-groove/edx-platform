@@ -1,0 +1,13 @@
+<select class="text-select <%- hasValue ? 'has-value' : '' %>" data-facet="<%- name %>" data-index="<%- index %>" class="facet-list collapse" buttonText="<%- displayName %>" multiple>
+    <%= HtmlUtils.ensureHtml(optionsHtml) %>
+</select>
+<% if (listIsHuge) { %>
+    <div class="toggle ">
+        <button class="show-more discovery-button">
+            <%- gettext("More") %>
+        </button>
+        <button class="show-less hidden discovery-button">
+            <%- gettext("Less") %>
+        </button>
+    </div>
+<% } %>

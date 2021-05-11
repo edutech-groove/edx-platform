@@ -1,0 +1,3 @@
+<option data-facet="<%- facet %>" data-count="<%- count %>" data-value="<%- term %>" data-text="<%- name %>" value="<%- term %>" <%- selected ? 'selected' : '' %>>
+    &lt;label class="form-check-label"&gt;<%- name %> &lt;span class="badge"&gt;<%- count %>&lt;/span&gt;&lt;/label&gt;
+</option>
