@@ -50,7 +50,7 @@
                     this.programs.courseCards.add(courses);
                     this.set({
                         programs:{
-                            totalCount: response.results.length ? response.results[0].count : 0,
+                            totalCount: response.total,
                             latestCount: courses.length
                         }
                     });
