@@ -32,27 +32,30 @@
                     history.pushState(state, '', url);
                     // listing.model = tab === 'courses' ? courseListingModel : programListingModel;
                     search.searchingType = tab;
+                    // refineSidebar.collection = tab === 'courses' ? search.courses.facetOptions : search.programs.facetOptions;
+                    search.page = 0;
                     activateTab($(this), tab);
                     form.doSearch();
                 });
 
                 window.onpopstate = function (event){
-                    // todo
-                    activateTab($('#tab-search [data-tab-name=' + event.state.tab + ']'), event.state.tab);
+                    if (event.state) {
+                        activateTab($('#tab-search [data-tab-name=' + event.state.tab + ']'), event.state.tab);
 
-                    var params = {};
-
-                    if (event.state.q) {
-                        params.q = event.state.q;
-                        $(form.$searchField).val(event.state.q);
-                    }
-                    
-                    if (event.state.tab) {
-                        params.tab = event.state.tab;
-                    }
+                        var params = {};
     
-                    history.replaceState(params, '', '?' + urlSearchParams.objectToQuery(params));
-                    form.doSearch();
+                        if (event.state.q) {
+                            params.q = event.state.q;
+                            $(form.$searchField).val(event.state.q);
+                        }
+                        
+                        if (event.state.tab) {
+                            params.tab = event.state.tab;
+                        }
+        
+                        history.replaceState(params, '', '?' + urlSearchParams.objectToQuery(params));
+                        form.doSearch();
+                    }
                 }
 
                 courseListingModel.userPreferences = {
@@ -98,6 +101,18 @@
                     listing.renderNext();
                 });
 
+                dispatcher.listenTo(search, 'updatepaging', function(total) {
+                    $('#demo').pagination({
+                        items: total,
+                        itemsOnPage: 1,
+                        onPageClick(pageNumber, event){
+                            // alert(pageNumber);
+                            search.page = pageNumber - 1;
+                            form.doSearch();
+                        }
+                    });
+                });
+
                 dispatcher.listenTo(search, 'search', function(query, total) {
                     // console.log(total);
                     // if (total > 0) {
@@ -126,9 +141,10 @@
                     } else {
                         $('#' + searchingType + '-list .page-title .left-side .records-count').text(total[searchingType] + ' results');
 
+                        var count = parseInt($('#page-count').text());
                         $('.search-content-container .page-title .right-side .pagination').pagination({
-                            items: 100,
-                            itemsOnPage: 10,
+                            items: count,
+                            itemsOnPage: 1,
                             onPageClick(pageNumber, event){
                                 // alert(pageNumber);
                                 search.page = pageNumber - 1;
@@ -138,6 +154,7 @@
                             nextText: '<svg width="5" height="9"><use xlink:href="#paging-next-icon"></use></svg>'
                         });
                     }
+
                 });
 
                 dispatcher.listenTo(search, 'error', function() {

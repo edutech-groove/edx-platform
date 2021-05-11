@@ -12,7 +12,7 @@
         return Backbone.Model.extend({
 
             page: 0,
-            pageSize: 20,
+            pageSize: 1,
             searchTerm: '',
             terms: {},
             jqhxr: null,
@@ -118,7 +118,7 @@
                     option.set('selected', false);
                 });
                 if (options.data.page_index === 0) {
-                    // if (total === 0) {
+                    if (total === 0) {
                     // // list all courses
                     //     this.cachedDiscovery().done(function(cached) {
                     //         this.records.courseCards.reset(cached.courseCards.toJSON());
@@ -128,7 +128,8 @@
                     //     });
                     //     this.searchTerm = '';
                     //     this.terms = {};
-                    // } else {
+                        this.trigger('updatepaging', total);
+                    } else {
                         var _this = this;
                         this.records.facetOptions.each(function(option) {
                             _.each(_this.terms, function(terms, facet) {
@@ -146,7 +147,7 @@
                             }, _this);
                         });
                         this.trigger('search', this.searchTerm, total);
-                    // }
+                    }
                 } else {
                     this.page = options.data.page_index;
                     this.trigger('next');

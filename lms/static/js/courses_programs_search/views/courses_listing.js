@@ -36,6 +36,8 @@
                     this.$el.find('#' + type + '-list').show();
                 }
 
+                var count = this.model.totalcount();
+                $('#page-count').text(count);
                 this.preRenderItems();
                 return this;
             },
@@ -58,6 +60,7 @@
                 /* eslint no-param-reassign: [2, { "props": true }] */
                 this.$list[type].empty();
                 var latest = this.model.latest();
+                // console.log(latest);
                 var items = latest[type].map(function(result) {
                     result.userPreferences = this.model.userPreferences;
                     var item = new CourseCardView({model: result});
