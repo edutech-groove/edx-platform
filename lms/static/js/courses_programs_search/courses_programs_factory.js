@@ -205,6 +205,7 @@
 
                 $(form.$searchField).on('keydown', function(e) {
                     if ([38, 40].includes(e.keyCode)) {
+                        isSearching = true;
                         onSearchSuggestions();
                     } else if ([27, 13].includes(e.keyCode)) {
                         onCloseSearchSuggestions();
@@ -234,9 +235,7 @@
                         var text = $(form.$searchField).val();
 
                         if (text.length) {
-                            search.getAutoSuggestions({
-                                search_string: text
-                            });
+                            search.getAutoSuggestions({ search_string: text });
                         }
                     }
                 }
@@ -245,18 +244,20 @@
                     var isEmpty = true;
                     var itemEl = $('<div class="records-wrapper">');
                     suggestions.forEach(function (item) {
-                        itemEl.append('<h3>' + (item.type === 'Program' ? 'Programs' : 'Courses') + '</h3>');
-                        var ulEl = $('<ul>');
-                        item.records.forEach(function (record) {
+                        if (item.records.length) {
                             isEmpty = false;
-                            var subItemEl = '<li><a href="/' + (item.type === 'Program' ? 'programs' : 'courses') + '/' + record.url + '/about' + '">' + record.name;
-                            if (record.org) {
-                                subItemEl += '<span class="badge">' + record.org + '</span>';
-                            }
-                            subItemEl += '</a></li>';
-                            ulEl.append(subItemEl);
-                        });
-                        ulEl.appendTo(itemEl);
+                            itemEl.append('<h3>' + (item.type === 'Program' ? 'Programs' : 'Courses') + '</h3>');
+                            var ulEl = $('<ul>');
+                            item.records.forEach(function (record) {
+                                var subItemEl = '<li><a href="/' + (item.type === 'Program' ? 'programs' : 'courses') + '/' + record.url + '/about' + '">' + record.name;
+                                if (record.org) {
+                                    subItemEl += '<span class="badge">' + record.org + '</span>';
+                                }
+                                subItemEl += '</a></li>';
+                                ulEl.append(subItemEl);
+                            });
+                            ulEl.appendTo(itemEl);
+                        }
                     });
 
                     if (isEmpty) {
