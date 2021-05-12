@@ -195,7 +195,7 @@
             },
 
             getPageSize: function() {
-                return this.searchingType === 'programs' ? 4 : 10;
+                return 10;
             }
         });
     });
