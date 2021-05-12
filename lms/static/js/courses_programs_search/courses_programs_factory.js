@@ -21,9 +21,10 @@
                 var courseListingModel = search.records;
                 var urlSearchParams = new UrlSearchParams();
                 var searchingType;
+                var isSearching;
                 onInit();
                 
-                $('#tab-search a').on('click.search', function(e) {
+                $('a.jump-to-tab').on('click', function(e) {
                     e.preventDefault();
                     var url = this.href;
                     var tab = $(this).data('tab-name');
@@ -31,8 +32,7 @@
                     history.pushState(state, '', url);
                     search.searchingType = tab;
                     search.page = 0;
-                    activateTab($(this), tab);
-                    // form.doSearch();
+                    activateTab($('#tab-search [data-tab-name=' + tab + ']'), tab);
                 });
 
                 window.onpopstate = function (event){
@@ -52,7 +52,6 @@
                         }
         
                         history.replaceState(params, '', '?' + urlSearchParams.objectToQuery(params));
-                        // form.doSearch();
                     }
                 }
 
@@ -70,6 +69,10 @@
                     search.performSearch(query, filters.getTerms(), containerType);
                 });
 
+                dispatcher.listenTo(form, 'submit', function() {
+                    formDoSearch();
+                });
+
                 dispatcher.listenTo(refineSidebar, 'selectOption', function(type, index, query) {
                     form.showLoadingIndicator();
                     if (filters.get(type)) {
@@ -84,7 +87,7 @@
                 dispatcher.listenTo(filterBar, 'clearFilter', removeFilter);
 
                 dispatcher.listenTo(filterBar, 'clearAll', function() {
-                    form.doSearch();
+                    formDoSearch();
                 });
 
 
@@ -95,14 +98,13 @@
                 });
 
                 dispatcher.listenTo(search, 'updatepaging', function(total) {
-                    console.log(total);
                     $('#demo').pagination({
                         items: total,
                         itemsOnPage: search.getPageSize(),
                         onPageClick(pageNumber, event){
                             event.preventDefault();
                             search.page = pageNumber - 1;
-                            form.doSearch(null, false);
+                            formDoSearch(false);
                         }
                     });
                 });
@@ -126,7 +128,7 @@
                             onPageClick(pageNumber, event){
                                 event.preventDefault();
                                 search.page = pageNumber - 1;
-                                form.doSearch(null, false);
+                                formDoSearch(false);
                             },
                             prevText: '<svg width="5" height="9"><use xlink:href="#paging-prev-icon"></use></svg>',
                             nextText: '<svg width="5" height="9"><use xlink:href="#paging-next-icon"></use></svg>'
@@ -138,6 +140,10 @@
                 dispatcher.listenTo(search, 'error', function() {
                     form.showErrorMessage(search.errorMessage);
                     form.hideLoadingIndicator();
+                });
+
+                dispatcher.listenTo(search, 'searchAutoSuggest', function(response) {
+                    onOpenSearchSuggestions(response);
                 });
 
                 function removeFilter(type, value = null) {
@@ -157,12 +163,7 @@
                     } else {
                         filters.remove(type);
                     }
-
-                    if (type === 'search_query') {
-                        form.doSearch('');
-                    } else {
-                        search.refineSearch(filters.getTerms());
-                    }
+                    search.refineSearch(filters.getTerms());
                 }
 
                 function quote(string) {
@@ -173,54 +174,34 @@
                     $('#tab-search > ul > li').removeClass('active');
                     nav.parentsUntil('ul').addClass('active');
                     searchingType = tab || 'all';
+                    formDoSearch(true, tab);
+                }
+
+                function formDoSearch(resetFilter = true, tab = null) {
+                    tab = tab || urlSearchParams.queryToObject().tab;
 
                     if (tab && tab !== 'all') {
                         setTimeout(() => {
                             search.reInitRecords(tab);
-                            form.doSearch();
+                            form.doSearch(undefined, resetFilter);
                         });
                     } else {
                         setTimeout(() => {
                             search.reInitRecords('programs');
-                            form.doSearch('', true, 'programs');
+                            form.doSearch($(form.$searchField).val(), resetFilter, 'programs');
                             search.reInitRecords('courses');
-                            form.doSearch('', true, 'courses');
+                            form.doSearch($(form.$searchField).val(), resetFilter, 'courses');
                         });
                     }
                 }
 
-                var projects = [
-                    {
-                        title: 'Course',
-                        records: [{
-                            name: 'El cerebro y las emociones en el lenguaje',
-                            org: 'URosarioX'
-                        }, {
-                            name: 'El arte de vender: introducción a las ventas',
-                            org: 'JaverianaX'
-                        }, {
-                            name: 'Introducción a los encofrados y las cimbras en obra civil y edificación',
-                            org: 'UPValenciaX'
-                        }]
-                    },
-                    {
-                        title: 'Programs',
-                        records: [{
-                            name: 'History of China: Bronze Age to the last Dynasties',
-                            org: 'HarvardX'
-                        }, {
-                            name: 'Internet de las cosas (IoT), Big Data y sus aplicaciones',
-                            org: 'URosarioX'
-                        }, {
-                            name: 'Fundamentos de Microsoft Office para la empresa',
-                            org: 'UPValenciaX'
-                        }]
-                    }
-                ];
-
                 $(form.$searchField).on('input', function() {
-                    onSearchSuggestions();
+                    isSearching = true;
                 });
+
+                $(form.$searchField).on('input', debounce(function() {
+                    onSearchSuggestions();
+                }, 500));
 
                 $(form.$searchField).on('keydown', function(e) {
                     if ([38, 40].includes(e.keyCode)) {
@@ -245,23 +226,45 @@
                 function onCloseSearchSuggestions() {
                     $('#search-suggestions > .search-suggestions-container').empty();
                     $('#search-suggestions').hide();
+                    isSearching = false;
                 }
 
                 function onSearchSuggestions() {
-                    var text = $(form.$searchField).val();
-                    
+                    if (isSearching) {
+                        var text = $(form.$searchField).val();
+
+                        if (text.length) {
+                            search.getAutoSuggestions({
+                                search_string: text
+                            });
+                        }
+                    }
+                }
+
+                function onOpenSearchSuggestions(suggestions) {
+                    var isEmpty = true;
                     var itemEl = $('<div class="records-wrapper">');
-                    projects.forEach(function (item) {
-                        itemEl.append('<h3>' + item.title + '</h3>');
+                    suggestions.forEach(function (item) {
+                        itemEl.append('<h3>' + (item.type === 'Program' ? 'Programs' : 'Courses') + '</h3>');
                         var ulEl = $('<ul>');
                         item.records.forEach(function (record) {
-                            ulEl.append('<li><a href="#">' + record.name + '<span class="badge">' + record.org + '</span></a></li>');
+                            isEmpty = false;
+                            var subItemEl = '<li><a href="/' + (item.type === 'Program' ? 'programs' : 'courses') + '/' + record.url + '/about' + '">' + record.name;
+                            if (record.org) {
+                                subItemEl += '<span class="badge">' + record.org + '</span>';
+                            }
+                            subItemEl += '</a></li>';
+                            ulEl.append(subItemEl);
                         });
                         ulEl.appendTo(itemEl);
                     });
 
-                    $('#search-suggestions > .search-suggestions-container').empty().append(itemEl);
-                    $('#search-suggestions').show();
+                    if (isEmpty) {
+                        onCloseSearchSuggestions();
+                    } else {
+                        $('#search-suggestions > .search-suggestions-container').empty().append(itemEl);
+                        $('#search-suggestions').show();
+                    }
                 }
 
                 function onViewAllSearchResults() {
@@ -270,11 +273,10 @@
                     var params = {
                         q: $(form.$searchField).val()
                     }
-                    history.pushState(params, '', Object.keys(params).length ? (urlSearchParams.objectToQuery(params) ? '?' + urlSearchParams.objectToQuery(params) : '') : '/search');
+                    history.pushState(params, '', '/search/?' + urlSearchParams.objectToQuery(params));
                     search.searchingType = 'all';
                     search.page = 0;
                     activateTab($('#tab-search [data-tab-name=all]'), 'all');
-                    form.doSearch();
                 }
 
                 function onInit() {
@@ -282,7 +284,6 @@
                     var urlParams = urlSearchParams.queryToObject();
                     var tab = urlParams.tab;
                     var q = urlParams.q;
-                    activateTab($('#tab-search a[href^="' + (tab ? ('?tab=' + tab) : '/' + location.pathname.split("/")[1]) + '"]'), tab);
 
                     if (q) {
                         params.q = q;
@@ -294,10 +295,27 @@
                     if (tab) {
                         params.tab = tab;
                     }
+
+                    activateTab($('#tab-search a[href^="' + (tab ? ('?tab=' + tab) : '/' + location.pathname.split("/")[1]) + '"]'), tab);
     
                     history.pushState(params, '', Object.keys(params).length ? (urlSearchParams.objectToQuery(params) ? '?' + urlSearchParams.objectToQuery(params) : '') : '/search');
                     
                 }
+
+                function debounce(func, wait, immediate) {
+                    var timeout;
+                    return function() {
+                        var context = this, args = arguments;
+                        var later = function() {
+                            timeout = null;
+                            if (!immediate) func.apply(context, args);
+                        };
+                        var callNow = immediate && !timeout;
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                        if (callNow) func.apply(context, args);
+                    };
+                };
             };
         });
 }(define || RequireJS.define));
