@@ -1,5 +1,10 @@
 <article class="course" role="region" aria-label="<%- content.display_name %>">
-    <a href="/courses/<%- course %>/about">
+    <% if (programtype) { %>
+        <a href="/programs/<%- id %>/about">
+    <% } else { %>
+        <a href="/courses/<%- course %>/about">
+    <% } %>
+    
         <header class="course-image">
             <div class="cover-image">
                 <img src="<%- image_url %>" alt="<%- content.display_name %> <%- content.number %>"  onerror="onImgError(this);"/>

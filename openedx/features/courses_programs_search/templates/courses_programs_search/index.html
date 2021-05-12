@@ -68,15 +68,15 @@
       <div aria-label="${_('Refine Your Search')}" class="search-facets phone-menu">
         <section class="search-facets-lists">
         </section>
-        <div id="filter-bar" class="filters hide-phone is-collapsed">
+        <div id="filter-bar" class="filters hide-phone is-collapsed" style="display: none;">
         </div>
       </div>
       % endif
       <div id="tab-search">
         <ul>
-          <li><a href="/search/" data-tab-name="all">All</a></li>
-          <li><a href="?tab=courses" data-tab-name="courses">Courses</a></li>
-          <li><a href="?tab=programs" data-tab-name="programs">Programs</a></li>
+          <li><a class="jump-to-tab" href="/search/" data-tab-name="all">All</a></li>
+          <li><a class="jump-to-tab" href="?tab=courses" data-tab-name="courses">Courses</a></li>
+          <li><a class="jump-to-tab" href="?tab=programs" data-tab-name="programs">Programs</a></li>
         </ul>
       </div>
     </div>
@@ -93,7 +93,7 @@
             </div>
             <div class="right-side">
               <div class="pagination"></div>
-              <a href="?tab=programs" class="navigation"></a>
+              <a href="?tab=programs" data-tab-name="programs" class="navigation jump-to-tab"></a>
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@
             </div>
             <div class="right-side">
               <div class="pagination"></div>
-              <a href="?tab=courses" class="navigation"></a>
+              <a href="?tab=courses" data-tab-name="courses" class="navigation jump-to-tab"></a>
             </div>
           </div>
         </div>

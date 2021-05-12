@@ -19,7 +19,7 @@
 
             submitForm: function(event) {
                 event.preventDefault();
-                this.doSearch();
+                this.trigger('submit');
             },
 
             doSearch: function(term, resetFilters = true, searchingType = null) {

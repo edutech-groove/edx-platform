@@ -3,10 +3,10 @@
         'underscore',
         'backbone',
         'js/courses_programs_search/models/course_discovery',
-        // 'js/courses_programs_search/models/auto_suggestions',
+        'js/courses_programs_search/models/auto_suggestions',
         'js/courses_programs_search/collections/filters',
         'js/courses_programs_search/models/url_search_params'
-    ], function(_, Backbone, CourseDiscovery, Filters, UrlSearchParams) {
+    ], function(_, Backbone, CourseDiscovery, AutoSuggestions, Filters, UrlSearchParams) {
         'use strict';
 
         return Backbone.Model.extend({
@@ -21,9 +21,10 @@
             initialize: function() {
                 this.searchingType = this.urlSearchParams.queryToObject().tab || 'all';
                 this.records = new CourseDiscovery(this.searchingType);
-                // this.autoSuggestions = new AutoSuggestions();
                 this.listenTo(this.records, 'sync', this.onSync, this);
                 this.listenTo(this.records, 'error', this.onError, this);
+                this.autoSuggestions = new AutoSuggestions();
+                this.listenTo(this.autoSuggestions, 'sync', this.onSyncAutoSuggest, this);
             },
 
             performSearch: function(searchTerm, otherTerms, containerType) {
@@ -66,16 +67,16 @@
                 }
             },
 
-            // getAutoSuggestions: function(data) {
-            //     if (this.records) {
-            //         this.jqhxr && this.jqhxr.abort();
-            //         this.jqhxr = this.autoSuggestions.fetch({
-            //             type: 'POST',
-            //             data: data
-            //         });
-            //         return this.jqhxr;
-            //     }
-            // },
+            getAutoSuggestions: function(data) {
+                if (this.autoSuggestions) {
+                    this.jqhxr && this.jqhxr.abort();
+                    this.jqhxr = this.autoSuggestions.fetch({
+                        type: 'POST',
+                        data: data
+                    });
+                    return this.jqhxr;
+                }
+            },
 
             buildQuery: function() {
                 var data = {
@@ -95,7 +96,7 @@
 
             onError: function(collection, response, options) {
                 if (response.statusText !== 'abort') {
-                    this.errorMessage = response.responseJSON.error;
+                    this.errorMessage = response.responseJSON ? response.responseJSON.error : '';
                     this.trigger('error');
                 }
             },
@@ -141,6 +142,10 @@
                     this.page = options.data.page_index;
                     this.trigger('next');
                 }
+            },
+
+            onSyncAutoSuggest: function(collection, response, options) {
+                this.trigger('searchAutoSuggest', response);
             },
 
         // lazy load
@@ -195,6 +200,10 @@
             },
 
             getPageSize: function() {
+                var tab = this.urlSearchParams.queryToObject().tab || 'all';
+                if (tab === 'all') {
+                    return this.searchingType === 'programs' ? 4 : 10;
+                }
                 return 10;
             }
         });
