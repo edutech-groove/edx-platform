@@ -3,7 +3,6 @@
         'underscore',
         'backbone',
         'js/courses_programs_search/models/course_discovery',
-        // 'js/courses_programs_search/models/auto_suggestions',
         'js/courses_programs_search/collections/filters',
         'js/courses_programs_search/models/url_search_params'
     ], function(_, Backbone, CourseDiscovery, Filters, UrlSearchParams) {
@@ -21,7 +20,6 @@
             initialize: function() {
                 this.searchingType = this.urlSearchParams.queryToObject().tab || 'all';
                 this.records = new CourseDiscovery(this.searchingType);
-                // this.autoSuggestions = new AutoSuggestions();
                 this.listenTo(this.records, 'sync', this.onSync, this);
                 this.listenTo(this.records, 'error', this.onError, this);
             },
@@ -195,6 +193,10 @@
             },
 
             getPageSize: function() {
+                var tab = this.urlSearchParams.queryToObject().tab || 'all';
+                if (tab === 'all') {
+                    return this.searchingType === 'programs' ? 4 : 10;
+                }
                 return 10;
             }
         });
