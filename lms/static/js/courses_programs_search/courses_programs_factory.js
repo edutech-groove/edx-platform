@@ -32,12 +32,13 @@
                     search.searchingType = tab;
                     search.page = 0;
                     activateTab($(this), tab);
-                    form.doSearch();
+                    // form.doSearch();
                 });
 
                 window.onpopstate = function (event){
                     if (event.state) {
-                        activateTab($('#tab-search [data-tab-name=' + event.state.tab + ']'), event.state.tab);
+                        var tab = event.state.tab || 'all';
+                        activateTab($('#tab-search [data-tab-name=' + tab + ']'), tab);
 
                         var params = {};
     
@@ -51,7 +52,7 @@
                         }
         
                         history.replaceState(params, '', '?' + urlSearchParams.objectToQuery(params));
-                        form.doSearch();
+                        // form.doSearch();
                     }
                 }
 
@@ -61,10 +62,12 @@
                 };
 
                 listing = new CoursesListing({model: courseListingModel});
-                dispatcher.listenTo(form, 'search', function(query) {
-                    filters.reset();
+                dispatcher.listenTo(form, 'search', function(query, resetFilters, containerType) {
+                    if (resetFilters) {
+                        filters.reset();
+                    }
                     form.showLoadingIndicator();
-                    search.performSearch(query, filters.getTerms());
+                    search.performSearch(query, filters.getTerms(), containerType);
                 });
 
                 dispatcher.listenTo(refineSidebar, 'selectOption', function(type, index, query) {
@@ -84,46 +87,46 @@
                     form.doSearch();
                 });
 
-                dispatcher.listenTo(listing, 'next', function() {
-                    search.loadNextPage();
-                });
 
                 dispatcher.listenTo(search, 'next', function() {
+                    form.hideLoadingIndicator();
+                    refineSidebar.render();
                     listing.renderNext();
                 });
 
                 dispatcher.listenTo(search, 'updatepaging', function(total) {
+                    console.log(total);
                     $('#demo').pagination({
                         items: total,
-                        itemsOnPage: 1,
+                        itemsOnPage: search.getPageSize(),
                         onPageClick(pageNumber, event){
+                            event.preventDefault();
                             search.page = pageNumber - 1;
-                            form.doSearch();
+                            form.doSearch(null, false);
                         }
                     });
                 });
 
-                dispatcher.listenTo(search, 'search', function(query, total) {
+                dispatcher.listenTo(search, 'search', function(query, total, containerType) {
                     form.hideLoadingIndicator();
                     refineSidebar.render();
-                    listing.render(searchingType);
-                    $('.search-content-container .page-title .right-side .pagination').empty();
-                    $('.search-content-container .page-title .right-side .navigation').empty();
+                    containerType = containerType || searchingType;
+                    listing.render(containerType, searchingType);
                     if (searchingType === 'all') {
-                        $('#courses-list .page-title .left-side .records-count').text(total.courses + ' results');
-                        $('#programs-list .page-title .left-side .records-count').text(total.programs + ' results');
-                        $('#courses-list .page-title .right-side .navigation').text('Show (' + total.courses + ')');
-                        $('#programs-list .page-title .right-side .navigation').text('Show (' + total.programs + ')');
+                        $('.search-content-container .page-title .right-side .pagination').empty();
+                        $('#' + containerType + '-list .page-title .left-side .records-count').text(total[containerType] + ' results');
+                        $('#' + containerType + '-list .page-title .right-side .navigation').text('Show (' + total[containerType] + ')');
                     } else {
+                        $('.search-content-container .page-title .right-side .navigation').empty();
                         $('#' + searchingType + '-list .page-title .left-side .records-count').text(total[searchingType] + ' results');
 
-                        var count = parseInt($('#page-count').text());
                         $('.search-content-container .page-title .right-side .pagination').pagination({
-                            items: count,
-                            itemsOnPage: 1,
+                            items: total[searchingType],
+                            itemsOnPage: search.getPageSize(),
                             onPageClick(pageNumber, event){
+                                event.preventDefault();
                                 search.page = pageNumber - 1;
-                                form.doSearch();
+                                form.doSearch(null, false);
                             },
                             prevText: '<svg width="5" height="9"><use xlink:href="#paging-prev-icon"></use></svg>',
                             nextText: '<svg width="5" height="9"><use xlink:href="#paging-next-icon"></use></svg>'
@@ -170,7 +173,20 @@
                     $('#tab-search > ul > li').removeClass('active');
                     nav.parentsUntil('ul').addClass('active');
                     searchingType = tab || 'all';
-                    search.reInitRecords(tab);
+
+                    if (tab && tab !== 'all') {
+                        setTimeout(() => {
+                            search.reInitRecords(tab);
+                            form.doSearch();
+                        });
+                    } else {
+                        setTimeout(() => {
+                            search.reInitRecords('programs');
+                            form.doSearch('', true, 'programs');
+                            search.reInitRecords('courses');
+                            form.doSearch('', true, 'courses');
+                        });
+                    }
                 }
 
                 var projects = [
@@ -202,11 +218,11 @@
                     }
                 ];
 
-                $('#discovery-input').on('input', function() {
+                $(form.$searchField).on('input', function() {
                     onSearchSuggestions();
                 });
 
-                $('#discovery-input').on('keydown', function(e) {
+                $(form.$searchField).on('keydown', function(e) {
                     if ([38, 40].includes(e.keyCode)) {
                         onSearchSuggestions();
                     } else if ([27, 13].includes(e.keyCode)) {
@@ -232,7 +248,7 @@
                 }
 
                 function onSearchSuggestions() {
-                    var text = $('#discovery-input').val();
+                    var text = $(form.$searchField).val();
                     
                     var itemEl = $('<div class="records-wrapper">');
                     projects.forEach(function (item) {
@@ -249,8 +265,16 @@
                 }
 
                 function onViewAllSearchResults() {
-                    form.doSearch();
                     onCloseSearchSuggestions();
+                    
+                    var params = {
+                        q: $(form.$searchField).val()
+                    }
+                    history.pushState(params, '', Object.keys(params).length ? (urlSearchParams.objectToQuery(params) ? '?' + urlSearchParams.objectToQuery(params) : '') : '/search');
+                    search.searchingType = 'all';
+                    search.page = 0;
+                    activateTab($('#tab-search [data-tab-name=all]'), 'all');
+                    form.doSearch();
                 }
 
                 function onInit() {
@@ -272,9 +296,7 @@
                     }
     
                     history.pushState(params, '', Object.keys(params).length ? (urlSearchParams.objectToQuery(params) ? '?' + urlSearchParams.objectToQuery(params) : '') : '/search');
-                    setTimeout(() => {
-                        form.doSearch();
-                    });
+                    
                 }
             };
         });
