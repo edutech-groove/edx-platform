@@ -52,18 +52,23 @@
                 });
             },
 
-            render: function() {
+            render: function(containerType, searchingType) {
                 var grouped = this.collection.groupBy('facet');
                 var index = 0;
                 var htmlSnippet = HtmlUtils.joinHtml.apply(
-                this, _.map(grouped, function(options, facetKey) {
-                    if (options.length > 0) {
-                        index ++;
-                        return this.renderFacet(facetKey, options, index);
-                    }
-                }, this)
-            );
-                HtmlUtils.setHtml(this.$container, htmlSnippet);
+                    this, _.map(grouped, function(options, facetKey) {
+                        if (options.length > 0 && facetKey !== 'language') {
+                            index ++;
+                            return this.renderFacet(facetKey, options, index);
+                        }
+                    }, this)
+                );
+
+                if (containerType === 'courses' && searchingType === 'all') {
+                    HtmlUtils.append(this.$container, htmlSnippet);
+                } else {
+                    HtmlUtils.setHtml(this.$container, htmlSnippet);
+                }
                 return this;
             },
 

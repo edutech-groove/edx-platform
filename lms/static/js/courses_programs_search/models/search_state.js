@@ -37,9 +37,10 @@
                 this.sendQuery(this.buildQuery());
             },
 
-            refineSearch: function(terms) {
+            refineSearch: function(terms, containerType) {
                 this.reset();
                 this.terms = terms;
+                this.containerType = containerType;
                 this.sendQuery(this.buildQuery());
             },
 
