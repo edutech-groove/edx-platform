@@ -173,6 +173,14 @@ urlpatterns = [
     url(r'^api/val/v0/', include('edxval.urls')),
     url(r'^api/tasks/v0/', include('user_tasks.urls')),
     url(r'^accessibility$', contentstore.views.accessibility, name='accessibility'),
+
+    # STATIC PAGE
+    url(r'^about$', contentstore.views.about, name='about'),
+    url(r'^faq$', contentstore.views.faq, name='faq'),
+    url(r'^tos$', contentstore.views.tos, name='tos'),
+    url(r'^honor$', contentstore.views.honor, name='honor'),
+    url(r'^privacy$', contentstore.views.privacy, name='privacy'),
+    url(r'^contact$', contentstore.views.contact, name='contact'),
 ]
 
 JS_INFO_DICT = {

@@ -22,6 +22,7 @@ from .tabs import *
 from .videos import *
 from .transcript_settings import *
 from .transcripts_ajax import *
+from .custom_static_page import *
 try:
     from .dev import *
 except ImportError:
