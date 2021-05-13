@@ -93,7 +93,7 @@
                     $target.val().forEach(function (item) {
                         value.push({
                             key: item,
-                            val: $target.find('option[data-value=' + item + ']').data('text')
+                            val: $target.find('option[data-value="' + item + '"]').data('text')
                         });
                     });
                 }
