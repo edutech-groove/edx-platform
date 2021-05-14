@@ -81,7 +81,7 @@
                     if (query) {
                         filters.add({type: type, query: query, index: index});
                     }
-                    search.refineSearch(filters.getTerms());
+                    searchRefine(filters);
                 });
 
                 dispatcher.listenTo(filterBar, 'clearFilter', removeFilter);
@@ -111,8 +111,8 @@
 
                 dispatcher.listenTo(search, 'search', function(query, total, containerType) {
                     form.hideLoadingIndicator();
-                    refineSidebar.render();
                     containerType = containerType || searchingType;
+                    refineSidebar.render(containerType, searchingType);
                     listing.render(containerType, searchingType);
                     if (searchingType === 'all') {
                         $('.search-content-container .page-title .right-side .pagination').empty();
@@ -163,7 +163,7 @@
                     } else {
                         filters.remove(type);
                     }
-                    search.refineSearch(filters.getTerms());
+                    searchRefine(filters);
                 }
 
                 function quote(string) {
@@ -175,6 +175,24 @@
                     nav.parentsUntil('ul').addClass('active');
                     searchingType = tab || 'all';
                     formDoSearch(true, tab);
+                }
+
+                function searchRefine(filters) {
+                    var tab = urlSearchParams.queryToObject().tab;
+
+                    if (tab && tab !== 'all') {
+                        setTimeout(() => {
+                            search.reInitRecords(tab);
+                            search.refineSearch(filters.getTerms(), tab);
+                        });
+                    } else {
+                        setTimeout(() => {
+                            search.reInitRecords('programs');
+                            search.refineSearch(filters.getTerms(), 'programs');
+                            search.reInitRecords('courses');
+                            search.refineSearch(filters.getTerms(), 'courses');
+                        });
+                    }
                 }
 
                 function formDoSearch(resetFilter = true, tab = null) {
