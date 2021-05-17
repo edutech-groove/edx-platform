@@ -5,5 +5,8 @@
     id="search"
     placeholder="<%- gettext("Search all posts") %>"
 />
-<label class="field-label" for="search" id="search-hint" aria-label='<%- gettext("Search all posts") %>'><%- gettext("Search all posts") %></label>
-<button class="btn btn-outline-primary btn-small search-button" type="button"><%- gettext("Search") %></button>
+<button class="btn btn-outline-primary btn-small search-button" type="button">
+    <svg width="18.414" height="18.414">
+        <use xlink:href="#magnifying-glass"></use>
+    </svg>
+</button>
