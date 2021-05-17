@@ -202,6 +202,7 @@
 
         this.options.multiple = this.$select.attr('multiple') === "multiple";
         this.options.onChange = $.proxy(this.options.onChange, this);
+        this.options.onAfterChange = $.proxy(this.options.onAfterChange, this);
         this.options.onSelectAll = $.proxy(this.options.onSelectAll, this);
         this.options.onDeselectAll = $.proxy(this.options.onDeselectAll, this);
         this.options.onDropdownShow = $.proxy(this.options.onDropdownShow, this);
@@ -339,6 +340,17 @@
              * @param {Boolean} checked
              */
             onChange: function (option, checked) {
+
+            },
+            /**
+             * Triggered on afterchange of the multiselect.
+             *
+             * Not triggered when selecting/deselecting options manually.
+             *
+             * @param {jQuery} option
+             * @param {Boolean} checked
+             */
+            onAfterChange: function () {
 
             },
             /**
@@ -696,6 +708,7 @@
                 }
 
                 this.$select.change();
+                this.options.onAfterChange();
                 this.updateButtonText();
 
                 if (this.options.preventInputChangeEvent) {
@@ -887,6 +900,7 @@
                     this.options.onChange($options, checked);
 
                     this.$select.change();
+                    this.options.onAfterChange();
                     this.updateButtonText();
                     this.updateSelectAll();
                 }, this));
