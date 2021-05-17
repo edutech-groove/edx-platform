@@ -243,6 +243,10 @@
                 }
             ];
 
+            if (fieldsData.language.options.length === 1) {
+                aboutSectionsData[0].fields.splice(-3, 1);
+            }
+
 			// Secondary email address
             if (isSecondaryEmailFeatureEnabled) {
                 secondaryEmailFieldView = {

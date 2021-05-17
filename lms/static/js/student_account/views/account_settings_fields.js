@@ -105,6 +105,13 @@
                                 countryTimeZones
                             );
                             view.render();
+                            
+                            var timeZoneSelect = $(view.el).find('select');
+                            if (timeZoneSelect.length) {
+                                timeZoneSelect.val(countryTimeZones[0]);
+                            }
+
+                            view.postRenderingView();
                         }
                     });
                 },
@@ -134,6 +141,12 @@
                         this.options.groupOptions[index] = groupOption;
                     } else {
                         this.options.groupOptions.unshift(groupOption);
+                    }
+                },
+
+                postRenderingView: function() {
+                    if (typeof window.reGenerateDropdowns === 'function') {
+                        window.reGenerateDropdowns();
                     }
                 }
 
