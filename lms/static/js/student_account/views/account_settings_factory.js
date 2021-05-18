@@ -439,6 +439,10 @@
                     visibility: null,
                     user_id: accountUserId
                 });
+
+                if (typeof window.CustomizeFunctionsHook !== 'undefined' && window.CustomizeFunctionsHook['dropdown']) {
+                    window.CustomizeFunctionsHook['dropdown']();
+                }
             };
 
             showLoadingError = function() {

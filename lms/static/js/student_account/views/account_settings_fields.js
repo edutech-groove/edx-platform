@@ -104,6 +104,7 @@
                                 'Country Time Zones',
                                 countryTimeZones
                             );
+
                             view.render();
                             
                             var timeZoneSelect = $(view.el).find('select');
@@ -111,7 +112,9 @@
                                 timeZoneSelect.val(countryTimeZones[0]);
                             }
 
-                            view.postRenderingView();
+                            if (typeof window.CustomizeFunctionsHook !== 'undefined' && window.CustomizeFunctionsHook['dropdown']) {
+                                window.CustomizeFunctionsHook['dropdown']();
+                            }
                         }
                     });
                 },
@@ -142,14 +145,8 @@
                     } else {
                         this.options.groupOptions.unshift(groupOption);
                     }
-                },
-
-                postRenderingView: function() {
-                    if (typeof window.reGenerateDropdowns === 'function') {
-                        window.reGenerateDropdowns();
-                    }
                 }
-
+                
             }),
             PasswordFieldView: FieldViews.LinkFieldView.extend({
                 fieldType: 'button',
