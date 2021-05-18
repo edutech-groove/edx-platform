@@ -70,8 +70,8 @@
                     HtmlUtils.setHtml(this.$container, htmlSnippet);
                 }
 
-                if (typeof window.reGenerateDropdowns === 'function') {
-                    window.reGenerateDropdowns();
+                if (typeof window.CustomizeFunctionsHook !== 'undefined' && window.CustomizeFunctionsHook['dropdown']) {
+                    window.CustomizeFunctionsHook['dropdown']();
                 }
                 
                 return this;
