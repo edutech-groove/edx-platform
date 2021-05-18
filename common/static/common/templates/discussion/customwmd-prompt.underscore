@@ -5,27 +5,31 @@
         <fieldset class="field-group">
             <legend class="form-group-hd sr"><%- title %></legend>
             <div class="field <%- uploadFieldClass %>">
-                <label id="new-url-input-label" for="new-url-input" class="field-label">
-                    <%- urlLabel %></label>
-                <input type="text" id="new-url-input" class="field-input input-text" aria-describedby="new-url-input-help">
-                <% if (imageUploadHandler) { %>
-                    <button id="file-upload-proxy" class="btn btn-primary btn-base form-btn">
-                        <%- chooseFileText %>
-                    </button>
-                    <input type="file" name="file-upload" id="file-upload" style="display:none;"/>
-                <% } %>
+                <div class="field-container">
+                    <label id="new-url-input-label" for="new-url-input" class="field-label">
+                        <%- urlLabel %></label>
+                    <input type="text" id="new-url-input" class="field-input input-text" aria-describedby="new-url-input-help">
+                    <% if (imageUploadHandler) { %>
+                        <button id="file-upload-proxy" class="btn btn-primary btn-base form-btn">
+                            <%- chooseFileText %>
+                        </button>
+                        <input type="file" name="file-upload" id="file-upload" style="display:none;"/>
+                    <% } %>
+                </div>
                 <div id="new-url-input-field-message" class="field-message has-error" style="display:none">
-                    <span class="field-message-content"><%- urlError %></span>
+                    <span class="field-message-content">* <%- urlError %></span>
                 </div>
                 <div id="new-url-input-help" class="field-hint">
                     <%- urlHelp %>
                 </div>
             </div>
             <div class="field">
-                <label for="new-url-desc-input" class="field-label"><%- urlDescLabel %></label>
-                <input type="text" id="new-url-desc-input" class="field-input input-text" required aria-describedby="new-url-desc-input-help">
+                <div class="field-container">
+                    <label for="new-url-desc-input" class="field-label"><%- urlDescLabel %></label>
+                    <input type="text" id="new-url-desc-input" class="field-input input-text" required aria-describedby="new-url-desc-input-help">
+                </div>
                 <div id="new-url-desc-input-field-message" class="field-message has-error" style="display:none">
-                    <span class="field-message-content"><%- descError %></span>
+                    <span class="field-message-content">* <%- descError %></span>
                 </div>
                 <div id="new-url-desc-input-help" class="field-hint">
                     <%- urlDescHelp %>
@@ -37,10 +41,12 @@
                 </div>
             </div>
             <div class="field"><% if (imageUploadHandler) { %>
-                <label for="img-is-decorative" class="field-label label-inline">
-                    <input type="checkbox" id="img-is-decorative" class="field-input input-checkbox">
-                    <span class="field-input-label"><%- imageIsDecorativeLabel %></span>
-                </label> <% }
+                <div class="field-container">
+                    <label for="img-is-decorative" class="field-label label-inline">
+                        <input type="checkbox" id="img-is-decorative" class="field-input input-checkbox">
+                        <span class="field-input-label"><%- imageIsDecorativeLabel %></span>
+                    </label>
+                </div><% }
             %></div>
         </fieldset>
         <div class="form-actions">
