@@ -166,6 +166,10 @@
                         this.submitForm();
                     }
 
+                    if (typeof window.CustomizeFunctionsHook !== 'undefined' && window.CustomizeFunctionsHook['dropdown']) {
+                        window.CustomizeFunctionsHook['dropdown']();
+                    }
+                    
                     return this;
                 },
 
