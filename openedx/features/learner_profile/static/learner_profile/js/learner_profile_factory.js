@@ -227,6 +227,10 @@
 
                 // Render the view for the first time
                 learnerProfileView.render();
+                
+                if (typeof window.CustomizeFunctionsHook !== 'undefined' && window.CustomizeFunctionsHook['dropdown']) {
+                    window.CustomizeFunctionsHook['dropdown']();
+                }
             };
 
             if (options.has_preferences_access) {
