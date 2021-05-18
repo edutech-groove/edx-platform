@@ -121,7 +121,7 @@
                             title: gettext('You currently have no cohorts configured'),
                             actionText: gettext('Add Cohort'),
                             actionClass: 'action-create',
-                            actionIconClass: 'fa-plus'
+                            svgIcon: '<svg width="10" height="10""><use xlink:href="#plus"></use></svg>'
                         });
                     }
                     this.renderVerifiedTrackSettingsNotificationView();

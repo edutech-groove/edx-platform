@@ -16,7 +16,8 @@
                 details: this.model.get('details'),
                 actionText: this.model.get('actionText'),
                 actionClass: this.model.get('actionClass'),
-                actionIconClass: this.model.get('actionIconClass')
+                actionIconClass: this.model.get('actionIconClass'),
+                svgIcon: this.model.get('svgIcon')
             }));
             this.$('.message').focus();
             return this;
