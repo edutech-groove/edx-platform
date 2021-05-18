@@ -69,6 +69,11 @@
                 } else {
                     HtmlUtils.setHtml(this.$container, htmlSnippet);
                 }
+
+                if (typeof window.reGenerateDropdowns === 'function') {
+                    window.reGenerateDropdowns();
+                }
+                
                 return this;
             },
 

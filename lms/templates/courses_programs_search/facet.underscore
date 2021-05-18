@@ -1,4 +1,4 @@
-<select class="text-select <%- hasValue ? 'has-value' : '' %>" data-facet="<%- name %>" data-index="<%- index %>" class="facet-list collapse" buttonText="<%- displayName %>" multiple>
+<select class="text-select <%- hasValue ? 'has-value' : '' %>" data-facet="<%- name %>" data-index="<%- index %>" class="facet-list collapse" buttonText="<%- displayName %>" multiple enableHTML="true">
     <%= HtmlUtils.ensureHtml(optionsHtml) %>
 </select>
 <% if (listIsHuge) { %>
