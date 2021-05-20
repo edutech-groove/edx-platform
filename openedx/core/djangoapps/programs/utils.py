@@ -29,6 +29,7 @@ from openedx.core.djangoapps.catalog.utils import get_programs, get_fulfillable_
 from openedx.core.djangoapps.certificates.api import available_date_for_certificate
 from openedx.core.djangoapps.commerce.utils import ecommerce_api_client
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.credentials.models import CredentialsApiConfig
 from openedx.core.djangoapps.credentials.utils import get_credentials
 from openedx.core.djangoapps.programs import ALWAYS_CALCULATE_PROGRAM_PRICE_AS_ANONYMOUS_USER
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
@@ -708,6 +709,15 @@ class ProgramDataExtender(object):
         })
 
 
+def _rewrite_url(program_uuid):
+    base_url = CredentialsApiConfig.current().public_service_url
+    if base_url:
+        program_uuid = program_uuid.replace("-","")
+        return "{}/credentials/{}".format(base_url, program_uuid)
+    else:
+        return False
+
+
 def get_certificates(user, extended_program):
     """
     Find certificates a user has earned related to a given program.
@@ -744,7 +754,9 @@ def get_certificates(user, extended_program):
             'force_program_cert_auth',
             True
         )
-        cert_url = program_credentials[0]['certificate_url']
+        cert_url = _rewrite_url(program_credentials[0]['uuid'])
+        if not cert_url:
+            cert_url = program_credentials[0]['certificate_url']
         url = get_logged_in_program_certificate_url(cert_url) if enabled_force_program_cert_auth else cert_url
 
         certificates.append({
