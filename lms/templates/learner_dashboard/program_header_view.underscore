@@ -1,9 +1,16 @@
 <div class="program-details-header">
     <div class="meta-info grid-container">
-        <% if (logo) { %>
-            <span aria-label="<%- gettext(programData.type) %>" class="<%- programData.type.toLowerCase() %> program-details-icon"><%= logo %></span>
-        <% } %>
-        <h2 class="hd-1 program-title"><%- programData.title %></h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16.72" height="24" viewBox="0 0 16.72 24">
+            <g transform="translate(-372.001 -297)">
+                <path fill="#f04545" d="M-156.25,308.342a2.81,2.81,0,0,1-.961-.169l-1.452-.527-1.452.53a2.81,2.81,0,0,1-.966.171,2.822,2.822,0,0,1-2.435-1.405l-.009-.016,0,6.1a1.4,1.4,0,0,0,.755,1.247,1.407,1.407,0,0,0,.653.161,1.405,1.405,0,0,0,.8-.252l2.622-1.82,2.622,1.82a1.4,1.4,0,0,0,1.455.091,1.4,1.4,0,0,0,.755-1.247v-6.012a2.822,2.822,0,0,1-2.392,1.334Z" transform="translate(539.033 6.571)"/>
+                <path fill="#fea528" d="M-222.133-38.844l-1.577-1.321-.359-2.026a1.405,1.405,0,0,0-1.386-1.162h0l-2.057,0-1.577-1.321a1.405,1.405,0,0,0-1.809,0l-1.575,1.324-2.057,0a1.405,1.405,0,0,0-1.385,1.164l-.355,2.026-1.575,1.324a1.405,1.405,0,0,0-.312,1.782l1.03,1.781-.355,2.026a1.405,1.405,0,0,0,.906,1.566l1.934.7,1.03,1.781a1.405,1.405,0,0,0,1.217.7,1.41,1.41,0,0,0,.484-.086l1.933-.705,1.934.7a1.405,1.405,0,0,0,1.7-.62l1.027-1.783,1.933-.705a1.405,1.405,0,0,0,.9-1.568l-.359-2.026,1.027-1.783a1.405,1.405,0,0,0-.316-1.781Zm-7.856,6.334a4.062,4.062,0,0,1-4.057-4.057,4.062,4.062,0,0,1,4.057-4.057,4.062,4.062,0,0,1,4.057,4.057,4.062,4.062,0,0,1-4.057,4.057Z" transform="translate(610.35 342)"/>
+                <circle fill="#fea528" cx="2.651" cy="2.651" r="2.651" transform="translate(376.617 305.434) rotate(-45)"/>
+            </g>
+        </svg>
+        <div class="text">
+            <span aria-label="<%- gettext(programData.type) %>" class="<%- programData.type.toLowerCase() %> program-details-icon"><%- gettext(programData.type) %></span>
+            <h2 class="hd-1 program-title"><%- programData.title %></h2>
+        </div>
     </div>
     <div class='authoring-organizations'>
         <h2 class="heading">Institutions</h2>
@@ -13,7 +20,7 @@
                 <img src="<%- org.certificate_logo_image_url || org.logo_image_url %>" class="org-logo" alt="<%- StringUtils.interpolate(
                     gettext('{organization}\'s logo'),
                     {organization: org.name}
-                ) %>">
+                ) %>" onerror="onImgError(this);">
               <% }) %>
             </div>
         <% } %>

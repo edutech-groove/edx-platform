@@ -26,24 +26,9 @@ class ProgramHeaderView extends Backbone.View {
     this.render();
   }
 
-  getLogo() {
-    const type = this.model.get('programData').type;
-    let logo = false;
-
-    if (type === 'MicroMasters') {
-      logo = MicroMastersLogo;
-    } else if (type === 'XSeries') {
-      logo = XSeriesLogo;
-    } else if (type === 'Professional Certificate') {
-      logo = ProfessionalCertificateLogo;
-    }
-    return logo;
-  }
-
   render() {
     const data = $.extend(this.model.toJSON(), {
-      breakpoints: this.breakpoints,
-      logo: this.getLogo(),
+      breakpoints: this.breakpoints
     });
 
     if (this.model.get('programData')) {

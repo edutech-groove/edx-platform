@@ -1,5 +1,7 @@
 <p class="certificate-status col-12 md-col-8">
     <span class="card-msg"><%- gettext('Certificate Status:') %></span>
-    <span class="fa fa-check-circle" aria-hidden="true"></span>
+    <svg width="16" height="16">
+        <use xlink:href="#checkmark"></use>
+    </svg>
     <span class="certificate-status-msg"><%- gettext('Certificate Purchased') %></span>
 </p>
