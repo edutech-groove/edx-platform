@@ -23,6 +23,10 @@
                 ) %>" onerror="onImgError(this);">
               <% }) %>
             </div>
+        <% }  else { %> 
+            <div class="orgs">
+                <img src="" onerror="onImgError(this);" class="org-placeholder-image" /> 
+            </div>
         <% } %>
     </div>
 </div>
