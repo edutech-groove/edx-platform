@@ -33,7 +33,6 @@ class ProgramHeaderView extends Backbone.View {
 
     if (this.model.get('programData')) {
       HtmlUtils.setHtml(this.$el, this.tpl(data));
-      console.log(data);
     }
   }
 }
