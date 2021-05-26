@@ -1006,6 +1006,9 @@ such that the value can be defined later than this assignment (file load order).
                     }
                 }));
             }
+            if (typeof window.CustomizeFunctionsHook !== 'undefined' && window.CustomizeFunctionsHook['dropdown']) {
+                window.CustomizeFunctionsHook['dropdown']();
+            }
             if (this.auth_lists.length === 0) {
                 this.$list_selector.hide();
             }
