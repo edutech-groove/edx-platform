@@ -25,6 +25,7 @@ faqs = program['faq']
 program_type = program['type'] if program['type'] else 'Program'
 title = program['title']
 courses = program['courses']
+total_hours_of_effort = program['total_hours_of_effort']
 subtitle = program['subtitle']
 overview = program['overview']
 instructors = program['instructor_ordering']
@@ -61,35 +62,6 @@ authoring_organizations = program['authoring_organizations']
         <div class="subtitle">
           <h2>${program['subtitle']}</h2>
         </div>
-        <div>
-          ## Note: Weird formatting to fix the inline spacing issue.
-          % if program.get('is_learner_eligible_for_one_click_purchase'):
-            <a href="${buy_button_href}" class="btn btn-success">
-            <span>${_('Purchase the Program (')}</span
-            % if program.get('discount_data') and program['discount_data']['is_discounted']:
-              ><span aria-label="${_('Original Price')}" class="original-price"
-              >${Text(_('${oldPrice}')).format(
-                  oldPrice=full_program_price_format.format(program['discount_data']['total_incl_tax_excl_discounts'])
-                )}</span
-              ><span aria-label="${_('Discounted Price')}" class="discount">
-                  ${Text(_('${newPrice}')).format(
-                    newPrice=full_program_price,
-                  )}
-              </span
-              ><span class="savings">
-                ${Text(_('{currency})')).format(
-                  discount_value=full_program_price_format.format(program['discount_data']['discount_value']),
-                  currency=program['discount_data']['currency']
-                )}
-              </span>
-            % else:
-            ><span>${"${price})".format(price=full_program_price)}
-              </span>
-            % endif
-            </a>
-          % else:
-          % endif
-        </div>
       </div>
     </div>
     <div class="sub-banner">
@@ -97,7 +69,7 @@ authoring_organizations = program['authoring_organizations']
         <div class="col-4">
           <div class="org-logo">
             % if authoring_organizations and authoring_organizations[0]['logo_image_url']:
-              <img class="authoring-org-logo" alt="${authoring_organizations[0]['name']}" src="${authoring_organizations[0]['logo_image_url']}"/>
+              <img class="authoring-org-logo" alt="${authoring_organizations[0]['name']}" src="${authoring_organizations[0]['logo_image_url']}" onerror="onImgError(this);"/>
             % else:
               <img class="authoring-org-logo" src="" onerror="onImgError(this);"/>
             % endif
@@ -110,7 +82,7 @@ authoring_organizations = program['authoring_organizations']
           </h1>
         </div>
         <div class="col-4">
-          <a href="#courses" class="btn-interest">
+          <a href="#purchasing" class="btn-interest">
             <div class="btn-content">
               ${_('I\'m interested')} 
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
@@ -129,13 +101,14 @@ authoring_organizations = program['authoring_organizations']
     <div class="row program-info">
       <div class="col col-12 col-lg-8">
         <div class="section what-you-will-learn">
-          % if expected_learning_items:
-            <div class="section_title">
+          % if expected_learning_items or overview:
+            <div class="section-title">
               <h3>
                 ${_('What you will learn')}
               </h3>
             </div>
             <div class="section-content">
+              % if expected_learning_items:
               <ul>
                 % for item in expected_learning_items:
                   <li>${item}</li>
@@ -161,7 +134,9 @@ authoring_organizations = program['authoring_organizations']
                 </li>
                 % endif
               </ul>
+              % endif
     
+              %if overview:
               <div class="program-overview">
                 <div class="accordion acc-lg">
                   <div class="header">
@@ -171,16 +146,17 @@ authoring_organizations = program['authoring_organizations']
                     </svg>
                   </div>
                   <div class="body" style="display: none;">
-                    ${HTML(program['overview'])}
+                    ${HTML(overview)}
                   </div>
                 </div>
               </div>
+              %endif
             </div>
           %endif
         </div>
-        % if courses:
+        % if courses or job_outlook_items:
         <div class="section courses-in-program">
-          <div class="section_title">
+          <div class="section-title">
             <h3>
               ${_('Courses in the {}').format(
                 program_type
@@ -197,9 +173,9 @@ authoring_organizations = program['authoring_organizations']
             </div>
 
             <div class="courses-content">
+              % if courses:
               <div class="accordions-wrapper">
                 % for course in courses:
-  
                   <%
                     ## The goal here is to get the `oldest course run that still has open enrollment`.
                     ## We fall back on the newest course if none are available for enrollment.
@@ -210,6 +186,7 @@ authoring_organizations = program['authoring_organizations']
                     course_about_url = reverse('about_course', args=[course_run['key']])
                     course_purchase_url = course_run['upgrade_url'] if course_run['upgrade_url'] else course_about_url
                     course_start_date = course_run['enrollment_start'] or course_run['start']
+                    course_end_date = course_run['enrollment_end'] or course_run['end']
                   %>
   
                   <div class="accordion has-icon course-item">
@@ -244,7 +221,12 @@ authoring_organizations = program['authoring_organizations']
                             <svg width="16" height="16">
                               <use xlink:href="#clock-solid"></use>
                             </svg>
-                            10–14 hours per week, for 16 weeks
+                            <%
+                              start_date_string = datetime.strptime(course_start_date,"%Y-%m-%dT%H:%M:%SZ")
+                              end_date_string = datetime.strptime(course_end_date,"%Y-%m-%dT%H:%M:%SZ")
+                              num_of_weeks = (abs(end_date_string-start_date_string).days / 7)
+                            %>
+                            10–14 hours per week, for ${num_of_weeks} weeks
                           </div>
                         </li>
                         % if course_run['short_description']:
@@ -270,6 +252,7 @@ authoring_organizations = program['authoring_organizations']
                   </div>
                 % endfor
               </div>
+              % endif
               % if job_outlook_items:
               <div class="accordions-wrapper">
                 <div class="accordion has-icon course-item">
@@ -393,7 +376,7 @@ authoring_organizations = program['authoring_organizations']
           Experts from ${authoring_organizations[0]['key']} committed to teaching online learning
         </div>
         % endif
-        <div class="section_title">
+        <div class="section-title">
           <h3>
             ${_('Instructors')}
           </h3>
@@ -402,16 +385,18 @@ authoring_organizations = program['authoring_organizations']
           % endif
         </div>
         <div class="section-content">
+          % if len(instructors) > 3:
           <div class="all-the-people">
             % for instructor in instructors:
             <div class="instructor-image-wrapper">
-              <img alt="" src="${instructor['profile_image_url']}"/>
+              <img alt="" src="${instructor['profile_image_url']}" onerror="onImgError(this);"/>
             </div>
             % endfor
           </div>
-
+          %endif;
 
           <div class="accordion instructors">
+            % if len(instructors) > 3:
             <div class="header">
               <span class="title">See instructor bios</span>
               <svg width="16" height="16" class="status-icon minus" style="display: none;">
@@ -422,6 +407,9 @@ authoring_organizations = program['authoring_organizations']
               </svg>
             </div>
             <div class="body" style="display: none;">
+            %else:
+            <div class="body">
+            %endif;
               <div class="row lg">
                 % for instructor in instructors:
                   <%
@@ -430,7 +418,7 @@ authoring_organizations = program['authoring_organizations']
                   <div class="col-12 col-sm-6 col-md-4 instructor">
                     <div class="profile-wrapper">
                       <div class="profile-image">
-                        <img alt="${instructor['given_name']}" src="${instructor['profile_image_url']}"/>
+                        <img alt="${instructor['given_name']}" src="${instructor['profile_image_url']}" onerror="onImgError(this);"/>
                       </div>
                       <div class="profile-info">
                         <a href="#instructor-details-${instructor_hash}" class="instructor-label">
@@ -450,7 +438,7 @@ authoring_organizations = program['authoring_organizations']
                                 <div class="modal-body">
                                   <div class="modal-header">
                                     <div>
-                                      <img alt="" src="${instructor['image']}"/>
+                                      <img alt="" src="${instructor['image']}" onerror="onImgError(this);"/>
                                       <div class="instructor-name">${instructor['name']}</div>
                                       <div>
                                         % if instructor.get('title'):
@@ -484,7 +472,7 @@ authoring_organizations = program['authoring_organizations']
     %>
     % if corporate_endorsements:
     <div class="section endorsements">
-      <div class="section_title">
+      <div class="section-title">
         <h3>
           ${_('Program endorsements')}
         </h3>
@@ -492,7 +480,6 @@ authoring_organizations = program['authoring_organizations']
       <div class="section-content">
         <div class="row">
           % for corporate_endorsement in corporate_endorsements:
-          % for a in [1,2]:
           <%
             corporate_endorsement_name = corporate_endorsement.get('corporation_name')
             corporate_endorsement_image = corporate_endorsement['image']['src'] if corporate_endorsement.get('image') else ''
@@ -530,14 +517,51 @@ authoring_organizations = program['authoring_organizations']
             </div>
           </div>
           %endfor
-          %endfor
         </div>
       </div>
     </div>
     %endif
+    % if program.get('is_learner_eligible_for_one_click_purchase'):
+    <div class="section purchase" id="purchasing">
+      <div class="prices-wrapper">
+        <div class="prices">
+          % if program.get('discount_data') and program['discount_data']['is_discounted']:
+          <span aria-label="${_('Discounted Price')}" class="discount">
+            ${Text(_('${newPrice}')).format(
+              newPrice=full_program_price,
+            )}
+          </span>
+          <del aria-label="${_('Original Price')}" class="original-price">
+          ${Text(_('${oldPrice}')).format(
+              oldPrice=full_program_price_format.format(program['discount_data']['total_incl_tax_excl_discounts'])
+            )}
+          </del>
+          % else:
+          <span>${"${price}".format(price=full_program_price)}</span>
+          % endif
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="section-title">
+          <h3>
+            ${_('Enrolling Now')}
+          </h3>
+        </div>
+        <div class="section-content">
+          <div class="info">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+              <use xlink:href="#checkmark"></use>
+            </svg>
+            ${len(courses)} courses in ${total_hours_of_effort} hours
+          </div>
+          <a href="#" class="pursue-btn">${_('Pursue the Program')}</a>
+        </div>
+      </div>
+    </div>
+    % endif
     % if faqs:
     <div class="section">
-      <div class="section_title">
+      <div class="section-title">
         <h3>
           ${_('FAQs')}
         </h3>
