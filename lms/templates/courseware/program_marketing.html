@@ -188,7 +188,7 @@ authoring_organizations = program['authoring_organizations']
                     course_start_date = course_run['enrollment_start'] or course_run['start']
                     course_end_date = course_run['enrollment_end'] or course_run['end']
                   %>
-  
+                  
                   <div class="accordion has-icon course-item">
                     <div class="header">
                       <svg width="15.75" height="18" class="icon">
@@ -438,7 +438,7 @@ authoring_organizations = program['authoring_organizations']
                                 <div class="modal-body">
                                   <div class="modal-header">
                                     <div>
-                                      <img alt="" src="${instructor['image']}" onerror="onImgError(this);"/>
+                                      <img alt="" src="${instructor['profile_image_url']}" onerror="onImgError(this);"/>
                                       <div class="instructor-name">${instructor['name']}</div>
                                       <div>
                                         % if instructor.get('title'):
@@ -494,7 +494,7 @@ authoring_organizations = program['authoring_organizations']
             endorser_title = endorser_position.get('title', '')
             endorser_org = endorser_position.get('organization_name') or corporate_endorsement_name
           %>
-          <div class="col-6">
+          <div class="col-md-6">
             <div class="endorsement">
               <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 46 46" class="quote-icon">
                 <g transform="translate(-98 -4153)">

@@ -1,8 +1,11 @@
 function playVideo(src) {
     'use strict';
-    document.querySelector('#program_video button').style = 'display:none;';
-    document.querySelector('#program_video #embed-video').style = 'display:block;';
-    document.querySelector('#program_video #embed-video iframe').src = src;
+    var embedUrl = getEmbedUrl(src);
+    if (embedUrl) {
+        document.querySelector('#program_video button').style = 'display:none;';
+        document.querySelector('#program_video #embed-video').style = 'display:block;';
+        document.querySelector('#program_video #embed-video iframe').src = embedUrl;
+    }
 }
 $('.instructor-image, .instructor-label').leanModal({closeButton: '.modal_close', top: '10%'});
 // Create MutationObserver which prevents the body of
@@ -40,3 +43,16 @@ $('.accordion .header').on('click', function(e) {
         }
     }
 });
+
+function getEmbedUrl(url) {    
+    if (url != undefined || url != '') {        
+        var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+        var match = url.match(regExp);
+        if (match && match[2].length == 11) {
+            return 'https://www.youtube.com/embed/' + match[2];
+        } else {
+            return url;
+        }
+    }
+    return null;
+}
