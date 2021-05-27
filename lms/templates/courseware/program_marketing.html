@@ -438,15 +438,20 @@ authoring_organizations = program['authoring_organizations']
                                 <div class="modal-body">
                                   <div class="modal-header">
                                     <div>
-                                      <img alt="" src="${instructor['image']}" onerror="onImgError(this);"/>
-                                      <div class="instructor-name">${instructor['name']}</div>
+                                      <img alt="" src="${instructor['profile_image_url']}" onerror="onImgError(this);"/>
+                                      <div class="instructor-name">${instructor['given_name']}</div>
                                       <div>
-                                        % if instructor.get('title'):
-                                          <span>${instructor['title']}</span>,
+                                        % if instructor.get('position'):
+
+                                          % if instructor['position']['title']:
+                                            <span>${instructor['position']['title']}</span>,
+                                          % endif
+                                          % if instructor['position']['organization_name']:
+                                            <span>${instructor['position']['organization_name']}</span>
+                                          % endif
+                                          
                                         % endif
-                                        % if instructor.get('organization'):
-                                          <span>${instructor['organization']}</span>
-                                        % endif
+                                        
                                       </div>
                                     </div>
                                   </div>
