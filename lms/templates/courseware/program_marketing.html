@@ -39,6 +39,20 @@ max_hours_effort_per_week = program['max_hours_effort_per_week']
 authoring_organizations = program['authoring_organizations']
 %>
 
+<%def name="get_courserun_efforts(course_run)">
+  % if course_run['min_effort'] is None and course_run['max_effort'] is not None:
+    ${course_run['max_effort']} hours per weeks
+  % elif course_run['min_effort'] is not None and course_run['max_effort'] is None:
+    ${course_run['min_effort']} hours per weeks
+  % elif course_run['min_effort'] is not None and course_run['max_effort'] is not None:
+    ${course_run['min_effort']}-${course_run['max_effort']} hours per weeks  
+  % endif
+
+  % if course_run['weeks_to_complete'] is not None:
+, for ${course_run['weeks_to_complete']} weeks
+  % endif
+</%def>
+
 <%block name="js_extra">
   <script src="${static.url('js/leanModal.js')}"></script>
   <script src="${static.url('js/program_marketing.js')}"></script>
@@ -228,7 +242,7 @@ authoring_organizations = program['authoring_organizations']
                               end_date_string = datetime.strptime(course_end_date,"%Y-%m-%dT%H:%M:%SZ")
                               num_of_weeks = (abs(end_date_string-start_date_string).days / 7)
                             %>
-                            10–14 hours per week, for ${num_of_weeks} weeks
+                            ${get_courserun_efforts(course_run)}
                           </div>
                         </li>
                         % if course_run['short_description']:
