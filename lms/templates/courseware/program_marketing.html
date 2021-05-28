@@ -68,7 +68,7 @@ authoring_organizations = program['authoring_organizations']
       <div class="row">
         <div class="col-4">
           <div class="org-logo">
-            % if authoring_organizations and authoring_organizations[0]['logo_image_url']:
+            % if len(authoring_organizations) and authoring_organizations[0]['logo_image_url']:
               <img class="authoring-org-logo" alt="${authoring_organizations[0]['name']}" src="${authoring_organizations[0]['logo_image_url']}" onerror="onImgError(this);"/>
             % else:
               <img class="authoring-org-logo" src="" onerror="onImgError(this);"/>
@@ -169,7 +169,9 @@ authoring_organizations = program['authoring_organizations']
               <svg xmlns="http://www.w3.org/2000/svg" width="18.281" height="24">
                 <use xlink:href="#marker"></use>
               </svg>
+              % if len(authoring_organizations) and authoring_organizations[0]['name']:
               ${authoring_organizations[0]['name']}'s ${program['title']} ${program['type']}
+              % endif
             </div>
 
             <div class="courses-content">
@@ -371,7 +373,7 @@ authoring_organizations = program['authoring_organizations']
   <div class="instructors-wrapper">
     <div class="container">
       <div class="section instructors">
-        % if authoring_organizations and authoring_organizations[0]['key']:
+        % if len(authoring_organizations) and authoring_organizations[0]['key']:
         <div class="text-callout">
           Experts from ${authoring_organizations[0]['key']} committed to teaching online learning
         </div>
@@ -380,7 +382,7 @@ authoring_organizations = program['authoring_organizations']
           <h3>
             ${_('Instructors')}
           </h3>
-          % if authoring_organizations and authoring_organizations[0]['name']:
+          % if len(authoring_organizations) and authoring_organizations[0]['name']:
             <p>${_('from')} ${authoring_organizations[0]['name']} (${authoring_organizations[0]['key']})</p>
           % endif
         </div>
