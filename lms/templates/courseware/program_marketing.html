@@ -217,7 +217,7 @@ authoring_organizations = program['authoring_organizations']
                     </div>
                     <div class="body" style="display: none;">
                       <ul>
-                        % if not course_run['is_course_ended']:
+                        % if not course_run['is_course_ended'] and course_start_date:
                         <li>
                           <div class="icon-content">
                             <svg width="16" height="16">
@@ -232,19 +232,19 @@ authoring_organizations = program['authoring_organizations']
                           </div>
                         </li>
                         % endif
+                        <%
+                        courserun_efforts = get_courserun_efforts(course_run)
+                        %>
+                        % if courserun_efforts:
                         <li>
                           <div class="icon-content">
                             <svg width="16" height="16">
                               <use xlink:href="#clock-solid"></use>
                             </svg>
-                            <%
-                              start_date_string = datetime.strptime(course_start_date,"%Y-%m-%dT%H:%M:%SZ")
-                              end_date_string = datetime.strptime(course_end_date,"%Y-%m-%dT%H:%M:%SZ")
-                              num_of_weeks = (abs(end_date_string-start_date_string).days / 7)
-                            %>
-                            ${get_courserun_efforts(course_run)}
+                            ${courserun_efforts}
                           </div>
                         </li>
+                        % endif
                         % if course_run['short_description']:
                         <li>
                           ${course_run['short_description']}
