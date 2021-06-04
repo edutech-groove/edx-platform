@@ -64,7 +64,7 @@ NPM_INSTALLED_LIBRARIES = [
     'requirejs/require.js',
     'underscore.string/dist/underscore.string.js',
     'underscore/underscore.js',
-    '@edx/studio-frontend/dist/',
+    'edutech-studio-frontend/dist/',
     'which-country/index.js'
 ]
 
