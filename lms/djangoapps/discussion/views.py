@@ -507,8 +507,8 @@ def get_request_params(request, user_id):
         'user_id': user_id
     }
     for key in PARAMS:
-        value = request.GET.get(key, 'False')
-        if value != 'False':
+        value = request.GET.get(key, False)
+        if value:
             params.update({key: value})
     return params
 
