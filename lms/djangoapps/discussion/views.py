@@ -501,6 +501,18 @@ def _create_discussion_board_context(request, base_context, thread=None):
     return context
 
 
+def get_request_params(request, user_id):
+    PARAMS = ["flagged", "unread", "unanswered", "sort_key"]
+    params = {
+        'user_id': user_id
+    }
+    for key in PARAMS:
+        value = request.GET.get(key, False)
+        if value:
+            params.update({key: value})
+    return params
+
+
 def create_user_profile_context(request, course_key, user_id):
     """ Generate a context dictionary for the user profile. """
     user = cc.User.from_django_user(request.user)
@@ -522,7 +534,7 @@ def create_user_profile_context(request, course_key, user_id):
         profiled_user = cc.User(id=user_id, course_id=course_key, group_id=group_id)
     else:
         profiled_user = cc.User(id=user_id, course_id=course_key)
-
+    query_params.update(get_request_params(request, user_id))
     threads, page, num_pages = profiled_user.active_threads(query_params)
     query_params['page'] = page
     query_params['num_pages'] = num_pages
