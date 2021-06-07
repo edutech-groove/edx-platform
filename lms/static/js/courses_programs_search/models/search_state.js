@@ -203,9 +203,9 @@
             getPageSize: function() {
                 var tab = this.urlSearchParams.queryToObject().tab || 'all';
                 if (tab === 'all') {
-                    return this.searchingType === 'programs' ? 4 : 10;
+                    return this.searchingType === 'programs' ? 4 : 12;
                 }
-                return 10;
+                return 12;
             }
         });
     });
