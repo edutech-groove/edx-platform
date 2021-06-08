@@ -5,8 +5,8 @@
     <ul class="certificate-list">
       <% _.each(certificateList, function(certificate){ %>
         <li class="certificate">
-            <a class="image-link" href="<%- certificate.url %>" aria-hidden="true" tabindex="-1"><img src="/static/images/programs/sample-cert.png" class="sample-cert" alt=""></a>
-            <a class="certificate-link" href="<%- certificate.url %>"><%- certificate.title %></a>
+            <a class="image-link" href="<%- certificate.url %>" aria-hidden="true" tabindex="-1" rel="noopener" target="_blank"><img src="/static/images/programs/sample-cert.png" class="sample-cert" alt="<%- certificate.title %>"></a>
+            <a class="certificate-link" href="<%- certificate.url %>" rel="noopener" target="_blank"><%- certificate.title %></a>
         </li>
       <% }); %>
     </ul>
