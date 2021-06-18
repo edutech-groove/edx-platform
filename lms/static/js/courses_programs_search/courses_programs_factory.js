@@ -115,14 +115,16 @@
                     refineSidebar.render(containerType, searchingType);
                     listing.render(containerType, searchingType);
                     if (searchingType === 'all') {
-                        $('.search-content-container .page-title .right-side .pagination').empty();
+                        $('.search-content-container .page-title .right-side .pagination').empty().hide();
+                        $('.search-content-container .page-title .right-side .jump-to-tab').show();
                         $('#' + containerType + '-list .page-title .left-side .records-count').text(total[containerType] + ' results');
                         $('#' + containerType + '-list .page-title .right-side .navigation').text('Show (' + total[containerType] + ')');
                     } else {
-                        $('.search-content-container .page-title .right-side .navigation').empty();
+                        $('.search-content-container .page-title .right-side .jump-to-tab').hide();
+                        $('.search-content-container .page-title .right-side .jump-to-tab .navigation').empty();
                         $('#' + searchingType + '-list .page-title .left-side .records-count').text(total[searchingType] + ' results');
 
-                        $('.search-content-container .page-title .right-side .pagination').pagination({
+                        $('.search-content-container .page-title .right-side .pagination').show().pagination({
                             items: total[searchingType],
                             itemsOnPage: search.getPageSize(),
                             onPageClick(pageNumber, event){

@@ -20,10 +20,15 @@
             <div class="course-date" aria-hidden="true">
             <% if (programtype) { %> <%- programtype %> (<%-course_count%>) courses <% } %>
             <% if (start){%>
-                <%- interpolate(
+                <span>
+                    <svg width="14" height="12.923">
+                        <use xlink:href="#date"></use>
+                    </svg>
+                    <%- interpolate(
                         gettext("Starts: %(start_date)s"),
                         { start_date: start }, true
                     ) %>
+                </span>
             <%}%>
             </div>
         </section>
