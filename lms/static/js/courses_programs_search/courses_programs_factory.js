@@ -109,10 +109,10 @@
                     });
                 });
 
-                dispatcher.listenTo(search, 'search', function(query, total, containerType) {
+                dispatcher.listenTo(search, 'search', function(query, total, containerType, resetFacets) {
                     form.hideLoadingIndicator();
                     containerType = containerType || searchingType;
-                    refineSidebar.render(containerType, searchingType);
+                    refineSidebar.render(containerType, searchingType, resetFacets);
                     listing.render(containerType, searchingType);
                     if (searchingType === 'all') {
                         $('.search-content-container .page-title .right-side .pagination').empty();

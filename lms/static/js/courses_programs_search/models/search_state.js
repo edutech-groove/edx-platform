@@ -120,15 +120,13 @@
                     option.set('selected', false);
                     _.each(_this.terms, function(terms, facet) {
                         if (facet !== 'search_query') {
-                                
-                                terms.forEach(function (term) {
-                                    if (option.attributes.facet == facet) {
-
-                                        if (option.attributes.term == term) {
-                                            option.set('selected', true);
-                                        }
+                            terms.forEach(function (term) {
+                                if (option.attributes.facet == facet) {
+                                    if (option.attributes.term == term) {
+                                        option.set('selected', true);
                                     }
-                                });
+                                }
+                            });
                         }
                     }, _this);
                 });
@@ -137,7 +135,7 @@
                     if (total === 0) {
                         this.trigger('updatepaging', total);
                     } else {
-                        this.trigger('search', this.searchTerm, total, this.containerType);
+                        this.trigger('search', this.searchTerm, total, this.containerType, _.isEmpty(this.terms));
                     }
                 } else {
                     this.page = options.data.page_index;
