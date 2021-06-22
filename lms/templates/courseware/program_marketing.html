@@ -611,13 +611,13 @@ authoring_organizations = program['authoring_organizations']
 
 <script>
   var facts = $('#facts');
-  var instructor = $('#instructor');
   var factsOffsetTop = facts.offset().top;
   var factsHeight = facts.height();
-  var instructorOffsetTop = instructor.offset().top;
 
   $(document).scroll(function() {
     var scrollTop = $(window).scrollTop();
+    var instructor = $('#instructor');
+    var instructorOffsetTop = instructor.offset().top;
 
     if (factsOffsetTop - scrollTop <= 106 && instructorOffsetTop - scrollTop >= factsHeight + 40 + 106) {
       facts.addClass('fixed');
