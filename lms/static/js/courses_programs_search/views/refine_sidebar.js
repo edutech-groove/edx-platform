@@ -52,26 +52,47 @@
                 });
             },
 
-            render: function(containerType, searchingType) {
+            render: function(containerType, searchingType, resetFacets) {
                 var grouped = this.collection.groupBy('facet');
                 var index = 0;
-                var htmlSnippet = HtmlUtils.joinHtml.apply(
-                    this, _.map(grouped, function(options, facetKey) {
-                        if (options.length > 0 && facetKey !== 'language') {
-                            index ++;
-                            return this.renderFacet(facetKey, options, index);
-                        }
-                    }, this)
-                );
 
-                if (containerType === 'courses' && searchingType === 'all') {
-                    HtmlUtils.append(this.$container, htmlSnippet);
+                if (resetFacets) {
+                    var htmlSnippet = HtmlUtils.joinHtml.apply(
+                        this, _.map(grouped, function(options, facetKey) {
+                            if (options.length > 0 && facetKey !== 'language') {
+                                index ++;
+                                return this.renderFacet(facetKey, options, index);
+                            }
+                        }, this)
+                    );
+                    if (containerType === 'courses' && searchingType === 'all') {
+                        HtmlUtils.append(this.$container, htmlSnippet);
+                    } else {
+                        HtmlUtils.setHtml(this.$container, htmlSnippet);
+                    }
+    
+                    if (typeof window.CustomizeFunctionsHook !== 'undefined' && window.CustomizeFunctionsHook['dropdown']) {
+                        window.CustomizeFunctionsHook['dropdown']();
+                    }
                 } else {
-                    HtmlUtils.setHtml(this.$container, htmlSnippet);
-                }
-
-                if (typeof window.CustomizeFunctionsHook !== 'undefined' && window.CustomizeFunctionsHook['dropdown']) {
-                    window.CustomizeFunctionsHook['dropdown']();
+                    var _this = this;
+                    _.forEach(grouped, function(options, facetKey) {
+                        var facetSelectElem = _this.$el.find('select[data-facet="' + facetKey + '"]')[0];
+                        var facetOptions = $(facetSelectElem).next('.btn-group').find('.multiselect-container>.multiselect-option>');
+                        $.each(facetOptions, function(index, option) {
+                            var optionInput = $(option).find('.form-check-input')[0];
+                            if (optionInput) {
+                                var badge = $(optionInput).next('.form-check-label').find('.badge')[0];
+                                var optionKey = $(optionInput).val();
+                                var data = options.filter(option => option.attributes.term === optionKey)[0];
+                                if (data) {
+                                    $(badge).html(data.attributes.count);
+                                } else {
+                                    $(badge).html('0');
+                                }
+                            }
+                        });
+                    });
                 }
                 
                 return this;
