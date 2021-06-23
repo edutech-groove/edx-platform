@@ -96,11 +96,11 @@ authoring_organizations = program['authoring_organizations']
           </h1>
         </div>
         <div class="col-4">
-          <a href="#purchasing" class="btn-interest">
+          <a class="btn-interest ${'disabled' if not program.get('is_learner_eligible_for_one_click_purchase') else ''}" ${'disabled' if not program.get('is_learner_eligible_for_one_click_purchase') else 'href="#purchasing"'} >
             <div class="btn-content">
               ${_('I\'m interested')} 
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-                <use xlink:href="#checkmark"></use>
+                <use xlink:href="#${'gray-checkmark' if not program.get('is_learner_eligible_for_one_click_purchase') else 'checkmark'}"></use>
               </svg>
             </div>
           </a>
@@ -297,7 +297,7 @@ authoring_organizations = program['authoring_organizations']
         % endif
       </div>
       <div class="col col-12 col-lg-4">
-        <div class="facts">
+        <div class="facts" id="facts">
           <ul class="list-unstyled">
             <li>
               <div class="icon">
@@ -384,7 +384,7 @@ authoring_organizations = program['authoring_organizations']
     </div>
   </div>
   % if instructors:
-  <div class="instructors-wrapper">
+  <div class="instructors-wrapper" id="instructor">
     <div class="container">
       <div class="section instructors">
         % if len(authoring_organizations) and authoring_organizations[0]['key']:
@@ -608,6 +608,29 @@ authoring_organizations = program['authoring_organizations']
     % endif
   </div>
 </div>
+
+<script>
+  var facts = $('#facts');
+  var factsOffsetTop = facts.offset().top;
+  var factsHeight = facts.height();
+
+  $(document).scroll(function() {
+    var scrollTop = $(window).scrollTop();
+    var instructor = $('#instructor');
+    var instructorOffsetTop = instructor.offset().top;
+
+    if (factsOffsetTop - scrollTop <= 106 && instructorOffsetTop - scrollTop >= factsHeight + 40 + 106) {
+      facts.addClass('fixed');
+      facts.removeClass('absolute');
+    } else if (instructorOffsetTop - scrollTop < factsHeight + 40 + 106) {
+      facts.removeClass('fixed');
+      facts.addClass('absolute');
+    } else {
+      facts.removeClass('fixed');
+      facts.removeClass('absolute');
+    }
+  });
+</script>
 
 <%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
     DateUtilFactory.transform(iterationKey=".localized_datetime");
