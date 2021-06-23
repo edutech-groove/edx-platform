@@ -17,9 +17,9 @@
         <% if (programData.authoring_organizations.length) { %>
             <div class="org">
                 <div class="org-logo-wrapper">
-                    <img src="<%- programData.authoring_organizations[0]certificate_logo_image_url || programData.authoring_organizations[0]logo_image_url %>" class="org-logo" alt="<%- StringUtils.interpolate(
+                    <img src="<%- programData.authoring_organizations[0].certificate_logo_image_url || programData.authoring_organizations[0].logo_image_url %>" class="org-logo" alt="<%- StringUtils.interpolate(
                         gettext('{organization}\'s logo'),
-                        {organization: programData.authoring_organizations[0]name}
+                        {organization: programData.authoring_organizations[0].name}
                     ) %>" onerror="onImgError(this);">
                 </div>
             </div>
