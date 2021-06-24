@@ -6,14 +6,11 @@
 </a>
 <div class="card-info">
     <div class="text-section">
-        <div class="meta-info">
-            <% if (type) { %>
-            <div class="category"><%- gettext(type) %></div>
-            <% } %>
-            <% if (orgList) { %>
-            <div class="organization"><%- orgList %></div>
-            <% } %>
-        </div>
+        <% if (orgList) { %>
+            <div class="meta-info">
+                <div class="organization"><%- orgList %></div>
+            </div>
+        <% } %>
         <h3 id="program-<%- uuid %>" class="title hd-3"><%- gettext(title) %></h3>
     </div>
     <% if (progress) { %>
