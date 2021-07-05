@@ -677,11 +677,11 @@ def permalink(content):
     else:
         course_id = content['course_id']
     if content['type'] == 'thread':
-        return reverse('discussion.views.single_thread',
-                       args=[course_id, content['commentable_id'], content['id']])
+        return reverse('single_thread',
+                       kwargs=dict(course_id=course_id, discussion_id=content['commentable_id'], thread_id=content['id']))
     else:
-        return reverse('discussion.views.single_thread',
-                       args=[course_id, content['commentable_id'], content['thread_id']]) + '#' + content['id']
+        return reverse('single_thread',
+                       kwargs=dict(course_id=course_id, discussion_id=content['commentable_id'], thread_id=content['thread_id'] + '#' + content['id']))
 
 
 def extend_content(content):
