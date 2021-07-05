@@ -70,11 +70,23 @@ authoring_organizations = program['authoring_organizations']
     full_program_price = full_program_price_format.format(program['full_program_price'])
   %>
   <div id="program-details-hero">
-    <div class="main-banner"
-      style="background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7) ), url(${banner_image});">
+    <div class="main-banner">
       <div class="container">
-        <div class="subtitle">
-          <h2>${program['subtitle']}</h2>
+        <div class="row xxl">
+          <div class="col-8">
+            <div class="subtitle">
+              <h2>
+                % if program['subtitle']:
+                  ${program['subtitle']}
+                % else:
+                  ${program['title']}
+                % endif
+              </h2>
+            </div>
+          </div>
+          <div class="col-4">
+            <img class="banner-image" src="${banner_image}" alt="Banner image">
+          </div>
         </div>
       </div>
     </div>
@@ -96,7 +108,7 @@ authoring_organizations = program['authoring_organizations']
           </h1>
         </div>
         <div class="col-4">
-          <a class="btn-interest ${'disabled' if not program.get('is_learner_eligible_for_one_click_purchase') else ''}" ${'disabled' if not program.get('is_learner_eligible_for_one_click_purchase') else 'href="#purchasing"'} >
+          <a class="btn-interest ${'disabled' if not program.get('is_learner_eligible_for_one_click_purchase') else ''}" ${'disabled' if not program.get('is_learner_eligible_for_one_click_purchase') else 'href="#purchasing-section"'} >
             <div class="btn-content">
               ${_('I\'m interested')} 
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
@@ -297,7 +309,7 @@ authoring_organizations = program['authoring_organizations']
         % endif
       </div>
       <div class="col col-12 col-lg-4">
-        <div class="facts" id="facts">
+        <div class="facts" id="facts-section">
           <ul class="list-unstyled">
             <li>
               <div class="icon">
@@ -384,7 +396,7 @@ authoring_organizations = program['authoring_organizations']
     </div>
   </div>
   % if instructors:
-  <div class="instructors-wrapper" id="instructor">
+  <div class="instructors-wrapper" id="instructor-section">
     <div class="container">
       <div class="section instructors">
         % if len(authoring_organizations) and authoring_organizations[0]['key']:
@@ -543,7 +555,7 @@ authoring_organizations = program['authoring_organizations']
     </div>
     %endif
     % if program.get('is_learner_eligible_for_one_click_purchase'):
-    <div class="section purchase" id="purchasing">
+    <div class="section purchase" id="purchasing-section">
       <div class="prices-wrapper">
         <div class="prices">
           % if program.get('discount_data') and program['discount_data']['is_discounted']:
@@ -610,24 +622,26 @@ authoring_organizations = program['authoring_organizations']
 </div>
 
 <script>
-  var facts = $('#facts');
+  var facts = $('#facts-section');
   var factsOffsetTop = facts.offset().top;
   var factsHeight = facts.height();
 
   $(document).scroll(function() {
-    var scrollTop = $(window).scrollTop();
-    var instructor = $('#instructor');
-    var instructorOffsetTop = instructor.offset().top;
+    var instructor = $('#instructor-section');
+    if (instructor && instructor.offset()) {
+      var scrollTop = $(window).scrollTop();
+      var instructorOffsetTop = instructor.offset().top;
 
-    if (factsOffsetTop - scrollTop <= 106 && instructorOffsetTop - scrollTop >= factsHeight + 40 + 106) {
-      facts.addClass('fixed');
-      facts.removeClass('absolute');
-    } else if (instructorOffsetTop - scrollTop < factsHeight + 40 + 106) {
-      facts.removeClass('fixed');
-      facts.addClass('absolute');
-    } else {
-      facts.removeClass('fixed');
-      facts.removeClass('absolute');
+      if (factsOffsetTop - scrollTop <= 106 && instructorOffsetTop - scrollTop >= factsHeight + 40 + 106) {
+        facts.addClass('fixed');
+        facts.removeClass('absolute');
+      } else if (instructorOffsetTop - scrollTop < factsHeight + 40 + 106) {
+        facts.removeClass('fixed');
+        facts.addClass('absolute');
+      } else {
+        facts.removeClass('fixed');
+        facts.removeClass('absolute');
+      }
     }
   });
 </script>
