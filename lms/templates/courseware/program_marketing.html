@@ -97,7 +97,7 @@ authoring_organizations = program['authoring_organizations']
             % if len(authoring_organizations) and authoring_organizations[0]['logo_image_url']:
               <img class="authoring-org-logo" alt="${authoring_organizations[0]['name']}" src="${authoring_organizations[0]['logo_image_url']}" onerror="onImgError(this);"/>
             % else:
-              <img class="authoring-org-logo" src="" onerror="onImgError(this);"/>
+              <img class="authoring-org-logo" src="" onerror="onImgError(this, 3);"/>
             % endif
           </div>
         </div>
@@ -417,7 +417,7 @@ authoring_organizations = program['authoring_organizations']
           <div class="all-the-people">
             % for instructor in instructors:
             <div class="instructor-image-wrapper">
-              <img alt="" src="${instructor['profile_image_url']}" onerror="onImgError(this);"/>
+              <img alt="" src="${instructor['profile_image_url']}" onerror="onImgError(this, 3);"/>
             </div>
             % endfor
           </div>
@@ -446,7 +446,7 @@ authoring_organizations = program['authoring_organizations']
                   <div class="col-12 col-sm-6 col-md-4 instructor">
                     <div class="profile-wrapper">
                       <div class="profile-image">
-                        <img alt="${instructor['given_name']}" src="${instructor['profile_image_url']}" onerror="onImgError(this);"/>
+                        <img alt="${instructor['given_name']}" src="${instructor['profile_image_url']}" onerror="onImgError(this, 3);"/>
                       </div>
                       <div class="profile-info">
                         <a href="#instructor-details-${instructor_hash}" class="instructor-label">
@@ -466,7 +466,7 @@ authoring_organizations = program['authoring_organizations']
                                 <div class="modal-body">
                                   <div class="modal-header">
                                     <div>
-                                      <img alt="" src="${instructor['profile_image_url']}" onerror="onImgError(this);"/>
+                                      <img alt="" src="${instructor['profile_image_url']}" onerror="onImgError(this, 3);"/>
                                       <div class="instructor-name">${instructor['given_name']}</div>
                                       <div>
                                         % if instructor.get('position'):

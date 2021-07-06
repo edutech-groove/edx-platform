@@ -20,12 +20,12 @@
                     <img src="<%- programData.authoring_organizations[0].certificate_logo_image_url || programData.authoring_organizations[0].logo_image_url %>" class="org-logo" alt="<%- StringUtils.interpolate(
                         gettext('{organization}\'s logo'),
                         {organization: programData.authoring_organizations[0].name}
-                    ) %>" onerror="onImgError(this);">
+                    ) %>" onerror="onImgError(this, 3);">
                 </div>
             </div>
         <% }  else { %> 
             <div class="org">
-                <img src="" onerror="onImgError(this);" class="org-placeholder-image" /> 
+                <img src="" onerror="onImgError(this, 3);" class="org-placeholder-image" /> 
             </div>
         <% } %>
     </div>

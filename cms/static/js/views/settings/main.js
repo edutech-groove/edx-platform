@@ -38,7 +38,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
 
         // Avoid showing broken image on mistyped/nonexistent image
         this.$el.find('img').error(function() {
-          window.onImgError(this, true);
+          window.onImgError(this, 2);
         });
         this.$el.find('img').load(function() {
           $(this).show();
